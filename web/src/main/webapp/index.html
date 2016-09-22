@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html ng-app="imApp">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="css/index.css"/>
+
+    <!--<script type="text/javascript" src="js/jquery-2.1.0.js"></script>-->
+    <!--<script type="text/javascript" src="js/bootstrap.js"></script>-->
+    <script type="text/javascript" src="js/config.js"></script>
+    <!--<script type="text/javascript" src="js/index.js"></script>-->
+    <script type="text/javascript" charset="utf-8" src="uedit/ueditor.config.js"></script>
+    <script type="text/javascript" charset="utf-8" src="uedit/ueditor.all.min.js"></script>
+    <script type="text/javascript" charset="utf-8" src="uedit/lang/zh-cn/zh-cn.js"></script>
+
+    <script type="text/javascript" charset="utf-8" src="js/angular.min.js"></script>
+    <script type="text/javascript" charset="utf-8" src="js/imServiec.js"></script>
+    <script type="text/javascript" charset="utf-8" src="js/angular-index.js"></script>
+
+
+</head>
+<body ng-controller="bodyController">
+<div ng-controller="loginController">
+    <div class="login" ng-show="!isLogin">
+        <img src="img/login-head.png" class="head img-circle">
+
+        <div class="form-group">
+            <input ng-model="username" type="email" class="form-control" id="username" placeholder="邮箱/手机号">
+        </div>
+        <div class="form-group">
+            <input ng-model="password" type="password" class="form-control" id="password" placeholder="密码">
+        </div>
+        <a id="login-btn" class="btn btn-primary  btn-block" ng-click="login()">登录</a>
+        <a class="register">注册</a>
+    </div>
+</div>
+
+<div ng-controller="chatController">
+    <div class="main" ng-show="isLogin">
+        <!--导航-->
+        <div class="left">
+            <ul>
+                <li><img src="img/head.png"></li>
+                <li><span class="glyphicon glyphicon-envelope active"></span></li>
+                <li><span class="glyphicon glyphicon-user unactive"></span></li>
+                <li><span class="glyphicon glyphicon-cloud unactive"></span></li>
+            </ul>
+            <span class="setting"><span class="glyphicon glyphicon-wrench unactive"></span></span>
+        </div>
+        <!--列表-->
+        <div class="chat-list">
+            <div class="search">
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="搜索">
+                </div>
+            </div>
+            <ul>
+                <li ng-click="continueChat(history)" ng-repeat="history in historys">
+                    <div class="item-1">
+                        <img ng-src="img/{{history.head}}">
+                    </div>
+                    <div class="item-2">
+                        <div class="chat-name">{{history.chatName}}</div>
+                        <div class="content">{{history.content}}</div>
+                    </div>
+                    <div class="item-3">
+                        <span ng-click="del(history)" class="close glyphicon glyphicon-remove"></span>
+                        <span class="date">{{history.date | date:'HH:mm'}}</span>
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+        <!--主-->
+        <div class="right">
+            <div class="title">
+                <div class="win-oper">
+                    <span class="glyphicon glyphicon-minus min"></span>
+                    <span class="glyphicon glyphicon-remove exit"></span>
+                </div>
+                <!--<div class="toolbar">-->
+                <!--<span class="glyphicon glyphicon-plane"></span>-->
+                <!--<span class="glyphicon glyphicon-calendar"></span>-->
+                <!--<span class="glyphicon glyphicon-random"></span>-->
+                <!--</div>-->
+                <div class="title-name">
+                    <span class="text"><!--麻将群(32人)-->{{title}}</span>
+                    <span class="oper glyphicon glyphicon-chevron-down"></span>
+                </div>
+            </div>
+            <div class="chat-main">
+                <div class="message-view">
+
+                    <!--class="left-message"-->
+                    <div
+                            ng-class="{true: 'left-message message', false: 'right-message message'}[isLeft(message)]"
+                            ng-repeat="message in messages">
+                        <span class="chat-id hidden">{{message.chatId}}</span>
+                        <img ng-src="img/{{message.head}}">
+
+                        <div class="content-message">
+                            {{message.content}}
+                        </div>
+                    </div>
+
+
+                    <!--<div class="left-message message">
+                        <img src="img/head.png">
+
+                        <div class="content-message">
+                            <p>sdasd<span
+                                    style="text-decoration: line-through;">sadasdsadasd<strong>asdsad</strong></span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="left-message message">
+                        <img src="img/head.png">
+
+                        <div class="content-message">
+                            <p>sdasd<span
+                                    style="text-decoration: line-through;">sadasdsadasd<strong>asdsad</strong></span>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="right-message message">
+                        <img src="img/head.png">
+
+                        <div class="content-message">
+                            <p>sdasd<span
+                                    style="text-decoration: line-through;">sadasds<br>adasd<strong>asdsad</strong></span>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="right-message message">
+                        <img src="img/head.png">
+
+                        <div class="content-message">
+                            <p>sdasd<span
+                                    style="text-decoration: line-through;">sadasds<br>adasd<strong>asdsad</strong></span>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="right-message message">
+                        <img src="img/head.png">
+
+                        <div class="content-message">
+                            <p>sdasd<span
+                                    style="text-decoration: line-through;">sadasds<br>adasd<strong>asdsad</strong></span>
+                            </p>
+                        </div>
+                    </div>-->
+
+                </div>
+                <div class="split"></div>
+                <div class="chat-input">
+                    <script id="editor" type="text/plain" style="width:100%;height:149px;"></script>
+                </div>
+                <div class="operation">
+                    <a id="send" class="btn btn-default btn-sm send" ng-click="send()">发送</a>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+</body>
+</html>
