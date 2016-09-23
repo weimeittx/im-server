@@ -1,0 +1,88 @@
+{
+  "success": true,
+  "result": [
+    {
+      "mark": "A",
+      "chats": [
+        {
+          "id": "123456",
+          "head": "head.png",
+          "nickname": "李四1",
+          "email": "422450455@qq.com",
+          "remarks": "这是我的备注"
+        },
+        {
+          "id": "123456",
+          "head": "head.png",
+          "nickname": "李四2",
+          "email": "422450455@qq.com",
+          "remarks": "这是我的备注"
+        },
+        {
+          "id": "123456",
+          "head": "head.png",
+          "nickname": "李四3",
+          "email": "422450455@qq.com",
+          "remarks": "这是我的备注"
+        }
+      ]
+    },
+    {
+      "mark": "AA",
+      "chats": [
+        {
+          "id": "123456",
+          "head": "head.png",
+          "nickname": "李四1",
+          "email": "422450455@qq.com",
+          "remarks": "这是我的备注"
+        },
+        {
+          "id": "123456",
+          "head": "head.png",
+          "nickname": "李四2",
+          "email": "422450455@qq.com",
+          "remarks": "这是我的备注"
+        },
+        {
+          "id": "123456",
+          "head": "head.png",
+          "nickname": "李四3",
+          "email": "422450455@qq.com",
+          "remarks": "这是我的备注"
+        }
+      ]
+    },
+    {
+      "mark": "B",
+      "chats": [
+        {
+          "id": "123456",
+          "head": "head.png",
+          "nickname": "李四4",
+          "email": "422450455@qq.com",
+          "remarks": "这是我的备注"
+        },
+        {
+          "id": "123456",
+          "head": "head.png",
+          "nickname": "李四5",
+          "email": "422450455@qq.com",
+          "remarks": "这是我的备注"
+        }
+      ]
+    },
+    {
+      "mark": "C",
+      "chats": [
+        {
+          "id": "123456",
+          "head": "head.png",
+          "nickname": "李四6",
+          "email": "422450455@qq.com",
+          "remarks": "这是我的备注"
+        }
+      ]
+    }
+  ]
+}

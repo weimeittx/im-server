@@ -1,170 +1,227 @@
 <!DOCTYPE html>
 <html ng-app="imApp">
 <head lang="en">
-    <meta charset="UTF-8">
-    <title></title>
-    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
-    <link rel="stylesheet" type="text/css" href="css/index.css"/>
+  <meta charset="UTF-8">
+  <title></title>
+  <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
+  <link rel="stylesheet" type="text/css" href="css/index.css"/>
 
-    <!--<script type="text/javascript" src="js/jquery-2.1.0.js"></script>-->
-    <!--<script type="text/javascript" src="js/bootstrap.js"></script>-->
-    <script type="text/javascript" src="js/config.js"></script>
-    <!--<script type="text/javascript" src="js/index.js"></script>-->
-    <script type="text/javascript" charset="utf-8" src="uedit/ueditor.config.js"></script>
-    <script type="text/javascript" charset="utf-8" src="uedit/ueditor.all.min.js"></script>
-    <script type="text/javascript" charset="utf-8" src="uedit/lang/zh-cn/zh-cn.js"></script>
+  <!--<script type="text/javascript" src="js/jquery-2.1.0.js"></script>-->
+  <!--<script type="text/javascript" src="js/bootstrap.js"></script>-->
+  <!--<script type="text/javascript" src="js/index.js"></script>-->
+  <script type="text/javascript" charset="utf-8" src="uedit/ueditor.config.js"></script>
+  <script type="text/javascript" charset="utf-8" src="uedit/ueditor.all.min.js"></script>
+  <script type="text/javascript" charset="utf-8" src="uedit/lang/zh-cn/zh-cn.js"></script>
 
-    <script type="text/javascript" charset="utf-8" src="js/angular.min.js"></script>
-    <script type="text/javascript" charset="utf-8" src="js/imServiec.js"></script>
-    <script type="text/javascript" charset="utf-8" src="js/angular-index.js"></script>
+  <script type="text/javascript" charset="utf-8" src="js/sockjs.js"></script>
+  <script type="text/javascript" charset="utf-8" src="js/vertx-eventbus.js"></script>
+  <script type="text/javascript" charset="utf-8" src="js/angular.min.js"></script>
+  <script type="text/javascript" charset="utf-8" src="js/imServiec.js"></script>
+  <script type="text/javascript" charset="utf-8" src="js/angular-index.js"></script>
 
 
 </head>
 <body ng-controller="bodyController">
-<div ng-controller="loginController">
-    <div class="login" ng-show="!isLogin">
-        <img src="img/login-head.png" class="head img-circle">
+<div ng-controller="loginController" class="login" ng-show="!isLogin">
+  <img src="img/login-head.png" class="head img-circle">
 
-        <div class="form-group">
-            <input ng-model="username" type="email" class="form-control" id="username" placeholder="邮箱/手机号">
-        </div>
-        <div class="form-group">
-            <input ng-model="password" type="password" class="form-control" id="password" placeholder="密码">
-        </div>
-        <a id="login-btn" class="btn btn-primary  btn-block" ng-click="login()">登录</a>
-        <a class="register">注册</a>
-    </div>
+  <div class="form-group">
+    <input ng-model="username" type="email" class="form-control" id="username" placeholder="邮箱/手机号">
+  </div>
+  <div class="form-group">
+    <input ng-model="password" type="password" class="form-control" id="password" placeholder="密码">
+  </div>
+  <a id="login-btn" class="btn btn-primary  btn-block" ng-click="login()">登录</a>
+  <a class="register">注册</a>
 </div>
 
-<div ng-controller="chatController">
-    <div class="main" ng-show="isLogin">
-        <!--导航-->
-        <div class="left">
-            <ul>
-                <li><img src="img/head.png"></li>
-                <li><span class="glyphicon glyphicon-envelope active"></span></li>
-                <li><span class="glyphicon glyphicon-user unactive"></span></li>
-                <li><span class="glyphicon glyphicon-cloud unactive"></span></li>
-            </ul>
-            <span class="setting"><span class="glyphicon glyphicon-wrench unactive"></span></span>
-        </div>
-        <!--列表-->
-        <div class="chat-list">
-            <div class="search">
-                <div class="form-group">
-                    <input type="text" class="form-control" placeholder="搜索">
-                </div>
-            </div>
-            <ul>
-                <li ng-click="continueChat(history)" ng-repeat="history in historys">
-                    <div class="item-1">
-                        <img ng-src="img/{{history.head}}">
-                    </div>
-                    <div class="item-2">
-                        <div class="chat-name">{{history.chatName}}</div>
-                        <div class="content">{{history.content}}</div>
-                    </div>
-                    <div class="item-3">
-                        <span ng-click="del(history)" class="close glyphicon glyphicon-remove"></span>
-                        <span class="date">{{history.date | date:'HH:mm'}}</span>
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-        <!--主-->
-        <div class="right">
-            <div class="title">
-                <div class="win-oper">
-                    <span class="glyphicon glyphicon-minus min"></span>
-                    <span class="glyphicon glyphicon-remove exit"></span>
-                </div>
-                <!--<div class="toolbar">-->
-                <!--<span class="glyphicon glyphicon-plane"></span>-->
-                <!--<span class="glyphicon glyphicon-calendar"></span>-->
-                <!--<span class="glyphicon glyphicon-random"></span>-->
-                <!--</div>-->
-                <div class="title-name">
-                    <span class="text"><!--麻将群(32人)-->{{title}}</span>
-                    <span class="oper glyphicon glyphicon-chevron-down"></span>
-                </div>
-            </div>
-            <div class="chat-main">
-                <div class="message-view">
-
-                    <!--class="left-message"-->
-                    <div
-                            ng-class="{true: 'left-message message', false: 'right-message message'}[isLeft(message)]"
-                            ng-repeat="message in messages">
-                        <span class="chat-id hidden">{{message.chatId}}</span>
-                        <img ng-src="img/{{message.head}}">
-
-                        <div class="content-message">
-                            {{message.content}}
-                        </div>
-                    </div>
+<div ng-controller="chatController" class="main" ng-show="isLogin">
+  <!--导航-->
+  <div class="left">
+    <ul ng-controller="navController">
+      <li><img ng-if="user.head" ng-src="img/{{user.head}}"></li>
+      <li ng-click="switchNav(1)"><span ng-class="{true:' active',false:'unactive'}[currentNav == 1]"
+                                        class="glyphicon glyphicon-envelope"></span></li>
+      <li ng-click="switchNav(2)"><span ng-class="{true:' active',false:'unactive'}[currentNav == 2]"
+                                        class="glyphicon glyphicon-user "></span></li>
+      <li ng-click="switchNav(3)"><span ng-class="{true:' active',false:'unactive'}[currentNav == 3]"
+                                        class="glyphicon glyphicon-cloud unactive"></span></li>
+    </ul>
+    <span class="setting"><span class="glyphicon glyphicon-wrench unactive"></span></span>
+  </div>
+  <!--列表-->
+  <span ng-show="currentNav == 1">
 
 
-                    <!--<div class="left-message message">
-                        <img src="img/head.png">
-
-                        <div class="content-message">
-                            <p>sdasd<span
-                                    style="text-decoration: line-through;">sadasdsadasd<strong>asdsad</strong></span>
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="left-message message">
-                        <img src="img/head.png">
-
-                        <div class="content-message">
-                            <p>sdasd<span
-                                    style="text-decoration: line-through;">sadasdsadasd<strong>asdsad</strong></span>
-                            </p>
-                        </div>
-                    </div>
-                    <div class="right-message message">
-                        <img src="img/head.png">
-
-                        <div class="content-message">
-                            <p>sdasd<span
-                                    style="text-decoration: line-through;">sadasds<br>adasd<strong>asdsad</strong></span>
-                            </p>
-                        </div>
-                    </div>
-                    <div class="right-message message">
-                        <img src="img/head.png">
-
-                        <div class="content-message">
-                            <p>sdasd<span
-                                    style="text-decoration: line-through;">sadasds<br>adasd<strong>asdsad</strong></span>
-                            </p>
-                        </div>
-                    </div>
-                    <div class="right-message message">
-                        <img src="img/head.png">
-
-                        <div class="content-message">
-                            <p>sdasd<span
-                                    style="text-decoration: line-through;">sadasds<br>adasd<strong>asdsad</strong></span>
-                            </p>
-                        </div>
-                    </div>-->
-
-                </div>
-                <div class="split"></div>
-                <div class="chat-input">
-                    <script id="editor" type="text/plain" style="width:100%;height:149px;"></script>
-                </div>
-                <div class="operation">
-                    <a id="send" class="btn btn-default btn-sm send" ng-click="send()">发送</a>
-                </div>
-            </div>
-
-        </div>
-
+  <div class="chat-list">
+    <div class="search">
+      <div class="form-group">
+        <input type="text" class="form-control" placeholder="搜索">
+      </div>
     </div>
+    <ul>
+      <li ng-click="continueChat(history)" ng-repeat="history in historys">
+        <div class="item-1">
+          <img ng-src="img/{{history.head}}">
+        </div>
+        <div class="item-2">
+          <div class="chat-name">{{history.chatName}}</div>
+          <div class="content">{{history.content}}</div>
+        </div>
+        <div class="item-3">
+          <span ng-click="del(history)" class="close glyphicon glyphicon-remove"></span>
+          <span class="date">{{history.date | date:'HH:mm'}}</span>
+        </div>
+
+      </li>
+    </ul>
+  </div>
+    <!--主-->
+  <div class="right">
+    <div class="title">
+      <div class="win-oper">
+        <span class="glyphicon glyphicon-minus min"></span>
+        <span class="glyphicon glyphicon-remove exit"></span>
+      </div>
+      <!--<div class="toolbar">-->
+      <!--<span class="glyphicon glyphicon-plane"></span>-->
+      <!--<span class="glyphicon glyphicon-calendar"></span>-->
+      <!--<span class="glyphicon glyphicon-random"></span>-->
+      <!--</div>-->
+      <div class="title-name">
+        <span class="text"><!--麻将群(32人)-->{{title}}</span>
+        <span class="oper glyphicon glyphicon-chevron-down"></span>
+      </div>
+    </div>
+    <div class="chat-main">
+      <div class="message-view">
+
+        <div
+          ng-class="{true: 'left-message message', false: 'right-message message'}[isLeft(message)]"
+          ng-repeat="message in messages">
+          <span class="chat-id hidden">{{message.chatId}}</span>
+          <img ng-src="img/{{message.head}}">
+
+          <div class="content-message">
+            {{message.content}}
+          </div>
+        </div>
+
+      </div>
+      <div class="split"></div>
+      <div class="chat-input">
+        <script id="editor" type="text/plain" style="width:100%;height:149px;"></script>
+      </div>
+      <div class="operation">
+        <a id="send" class="btn btn-default btn-sm send" ng-click="send()">发送</a>
+      </div>
+    </div>
+
+  </div>
+  </span>
+
+   <span ng-show="currentNav == 2" ng-controller="contactlistController">
+     <div class="contact-list">
+       <div class="search">
+         <div class="form-group">
+           <input type="text" class="form-control" placeholder="搜索">
+         </div>
+       </div>
+       <div class="contact-list-bottom">
+         <div class="mark">群聊</div>
+         <ul>
+           <li ng-click="viewChatGroupInfo(chatGroup)" ng-repeat="chatGroup in chatGroups">
+             <div class="contact-item">
+               <img ng-src="img/{{chatGroup.head}}">
+               <span class="contact-name">{{chatGroup.chatGroupName}}</span>
+             </div>
+           </li>
+         </ul>
+
+         <ul>
+           <li ng-repeat="chat in chats">
+             <div class="mark">{{chat.mark}}</div>
+             <div ng-click="viewChatInfo(chatItem)" class="contact-item" ng-repeat="chatItem in chat.chats">
+               <img ng-src="img/{{chatItem.head}}">
+               <span class="contact-name">{{chatItem.nickname}}</span>
+             </div>
+           </li>
+         </ul>
+       </div>
+     </div>
+     <!--主-->
+  <div class="right">
+    <div class="title">
+      <div class="win-oper">
+        <span ng-click="min()" class="glyphicon glyphicon-minus min"></span>
+        <span ng-click="exit()" class="glyphicon glyphicon-remove exit"></span>
+      </div>
+      <div class="title-name">
+        <span class="text">{{contactTitle}}</span>
+      </div>
+    </div>
+
+
+    <div ng-show="viewInfo == 1" class="chatInfo">
+      <img ng-src="img/{{chatInfo.head}}">
+      <ul>
+        <li>
+          <div class="chat-name">{{chatInfo.nickname}}</div>
+        </li>
+        <li>
+          <div>{{chatInfo.remarks}}</div>
+        </li>
+        <li>
+          <div>
+            <span class="key">邮箱</span>
+            <span class="value">{{chatInfo.email}}</span>
+          </div>
+        </li>
+      </ul>
+
+      <a ng-click="enterChat(chatInfo)" class="btn btn-success start-chat">发消息</a>
+    </div>
+
+
+
+
+
+    <div ng-show="viewInfo == 2" class="chatGroupInfo">
+      <ul>
+        <li ng-repeat="member in chatGroup.members">
+          <img src="img/head.png">
+          <div>sdsadsa</div>
+        </li>
+      </ul>
+      <a ng-click="enterGroupChat(chatGroup)" class="btn btn-success start-chat">进入聊天</a>
+    </div>
+  </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   </span>
+   <span ng-show="currentNav == 3">
+    云盘
+   </span>
 </div>
 </body>
 </html>

@@ -4,7 +4,7 @@
     {
       "id": "1",
       "head": "head.png",
-      "chatName": "李四",
+      "chatName": "李四1",
       "content": "你好!",
       "date": 12345678954
     },
@@ -12,7 +12,7 @@
       "id": "2",
       "type": "chat",
       "head": "head.png",
-      "chatName": "李四",
+      "chatName": "李四2",
       "content": "你好!",
       "date": 12345678954
     },
@@ -20,14 +20,14 @@
       "id": "3",
       "type": "group",
       "head": "head.png",
-      "chatName": "李四",
+      "chatName": "李四3",
       "content": "你好!",
       "date": 12345678954
     },
     {
       "id": "4",
       "head": "head.png",
-      "chatName": "李四",
+      "chatName": "李四4",
       "content": "你好!",
       "date": 12345678954
     },
@@ -35,14 +35,14 @@
       "type": "group",
       "id": "5",
       "head": "head.png",
-      "chatName": "李四",
+      "chatName": "李四5",
       "content": "你好!",
       "date": 12345678954
     },
     {
       "id": "6",
       "head": "head.png",
-      "chatName": "李四",
+      "chatName": "李四6",
       "content": "你好!",
       "date": 12345678954
     }

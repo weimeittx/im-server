@@ -1,0 +1,29 @@
+{
+  "success": true,
+  "result": [
+    {
+      "id": "1234560",
+      "head": "head.png",
+      "chatGroupName": "麻将群1",
+      "size": 2
+    },
+    {
+      "id": "1234561",
+      "head": "head.png",
+      "chatGroupName": "麻将群2",
+      "size": 2
+    },
+    {
+      "id": "1234562",
+      "head": "head.png",
+      "chatGroupName": "麻将群3",
+      "size": 2
+    },
+    {
+      "id": "1234563",
+      "head": "head.png",
+      "chatGroupName": "麻将群4",
+      "size": 2
+    }
+  ]
+}

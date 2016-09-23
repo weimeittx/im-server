@@ -39,6 +39,10 @@ public class User implements java.io.Serializable{
     private String head;
 
     /**
+     * 备注
+     */
+    private String remarks;
+    /**
      * 昵称
      */
     private String nickname;
@@ -97,5 +101,13 @@ public class User implements java.io.Serializable{
 
     public void setNickname(String nickname) {
         this.nickname = nickname;
+    }
+
+    public String getRemarks() {
+        return remarks;
+    }
+
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
     }
 }
