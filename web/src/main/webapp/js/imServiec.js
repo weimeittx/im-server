@@ -111,14 +111,15 @@ angular.module('imService', [])
     /**
      * 获取历史聊天消息
      */
-    this.getHistoryMessage = function (history, f) {
+    this.getHistoryMessage = function (history,lastTime, f) {
+      console.log(history)
       $http({
-        url: "/im-server/web/src/main/webapp/data/historyMessage.json",
+        url: "/message/getChatHistoryMessage",
         data: {
-          to: history.id,
-          type: history.type
-          //chatName
-        }
+          id: history.id,
+          time: lastTime
+        },
+        method:"post"
       }).success(f)
     }
   })

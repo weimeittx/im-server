@@ -95,18 +95,21 @@ angular.module('imApp', ['imService'])
     $scope.continueChat = function (history) {
       var chat = undefined;
       if (history.user) {
-        chat = history.user
+        chat = history.user;
         $scope.title = chat.nickname;
       } else {
-        chat = history.chatGroup
+        chat = history.chatGroup;
         $scope.title = chat.chatGroupName;
       }
       $scope.messages = [];
       $scope.currentChat = chat;
       inputService.setFocus();
-      //chatHistory.getHistoryMessage(chat, function (result) {
-      //  $scope.messages = result.messages;
-      //})
+      chatHistory.getHistoryMessage(chat, new Date().getTime(), function (result) {
+        if (result.success) {
+          console.log(result.result.messages)
+          $scope.messages = result.result.messages.reverse();
+        }
+      })
     };
 
 
@@ -123,7 +126,8 @@ angular.module('imApp', ['imService'])
         type: 'chat',//TODO
         to: $scope.currentChat.id,
         from: user,
-        content: content
+        content: content,
+        createTime: new Date().getTime()
       };
       if (!isTop()) {
         moveTop();

@@ -197,12 +197,15 @@ public class Main {
 //      .orOperator(Criteria.where("from").is(new User("57dfff487294a0af27bd7427")))
 //      .orOperator(Criteria.where("to").is("57dfff487294a0af27bd7426")).andOperator(Criteria.where("to").is("57dfff487294a0af27bd7427").orOperator(Criteria.where("from").is(new User("57dfff487294a0af27bd7427"))));
 
+    Criteria criteria1 = Criteria.where("from").is(new User("57dfff487294a0af27bd7426")).and("to").is("57dfff487294a0af27bd7427");
+    Criteria criteria2 = Criteria.where("from").is(new User("57dfff487294a0af27bd7427")).and("to").is("57dfff487294a0af27bd7426");
+    Criteria criteria3 = Criteria.where("createTime").lt(System.currentTimeMillis()).orOperator(criteria1,criteria2);
+//      .orOperator(Criteria.where("from").is(new User("57dfff487294a0af27bd7427")).and("to").is("57dfff487294a0af27bd7426"));
+//      .andOperator(Criteria.where("createTime").lt(System.currentTimeMillis()));
 
-    Criteria criteria = Criteria.where("from").in(new User("57dfff487294a0af27bd7426"), new User("57dfff487294a0af27bd7427"))
-      .andOperator(Criteria.where("to").in("57dfff487294a0af27bd7426", "57dfff487294a0af27bd7427"), Criteria.where("createTime").lt(System.currentTimeMillis()));
-    Query query = Query.query(criteria).with(new PageRequest(1, 20)).with(new Sort(new Sort.Order(Sort.Direction.DESC, "createTime")));
+    Query query = Query.query(criteria3).with(new PageRequest(0, 20)).with(new Sort(new Sort.Order(Sort.Direction.DESC, "createTime")));;//
     List<Message> messages = mongoTemplate.find(query, Message.class);
-    System.out.println(JSONObject.toJSONString(messages));
+    System.out.println(messages.size());
   }
 
   @Test

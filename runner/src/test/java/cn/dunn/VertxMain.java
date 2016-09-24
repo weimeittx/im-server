@@ -10,6 +10,8 @@ import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.junit.Test;
 
+import java.util.stream.Stream;
+
 /**
  * Created by Administrator on 2016/9/24.
  */
@@ -58,5 +60,11 @@ public class VertxMain {
     });
 
     Thread.sleep(Integer.MAX_VALUE);
+  }
+
+  @Test
+  public void testStrame(){
+    Stream<Integer> integerStream = Stream.of(1, 2, 3, 4, 5);
+    System.out.println(integerStream.filter(integer -> integer == 22).findAny().isPresent());
   }
 }

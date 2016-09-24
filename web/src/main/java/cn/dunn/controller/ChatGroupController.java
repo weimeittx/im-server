@@ -27,7 +27,7 @@ public class ChatGroupController {
   @RequestMapping("/getChatGroup")
   @ResponseBody
   public HttpResult getChatGroup(HttpServletRequest request) {
-    List<GroupMember> groupMembers = groupMemberRepository.findByMember(WebUtil.LoginUser(request));
+    List<GroupMember> groupMembers = groupMemberRepository.findByMember(WebUtil.loginUser(request));
     List<ChatGroup> result = groupMembers.stream().map(GroupMember::getChatGroup).collect(Collectors.toList());
     return new HttpResult(result);
   }

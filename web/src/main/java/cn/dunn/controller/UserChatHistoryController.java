@@ -29,7 +29,7 @@ public class UserChatHistoryController {
   @RequestMapping("getUserChatHistory")
   @ResponseBody
   public HttpResult getUserChatHistory(HttpServletRequest request) {
-    UserChatHistory result = mongoTemplate.findOne(Query.query(Criteria.where("user").is(WebUtil.LoginUser(request))), UserChatHistory.class);
+    UserChatHistory result = mongoTemplate.findOne(Query.query(Criteria.where("user").is(WebUtil.loginUser(request))), UserChatHistory.class);
     return new HttpResult(result.getChatHistorys());
   }
 }

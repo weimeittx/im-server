@@ -29,7 +29,7 @@ public class UserController {
   @RequestMapping("/getFriends")
   @ResponseBody
   public HttpResult getFriends(HttpServletRequest request) {
-    List<GroupUser> result = FormatUtil.groupUser(friendNexusRepository.findBySelf(WebUtil.LoginUser(request)).stream().map(FriendNexus::getFriend).collect(Collectors.toList()));
+    List<GroupUser> result = FormatUtil.groupUser(friendNexusRepository.findBySelf(WebUtil.loginUser(request)).stream().map(FriendNexus::getFriend).collect(Collectors.toList()));
     return new HttpResult(result);
   }
 

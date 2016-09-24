@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
  * Created by Administrator on 2016/9/22.
  */
 public class WebUtil {
-    public static User LoginUser(HttpServletRequest request) {
+    public static User loginUser(HttpServletRequest request) {
         return (User) request.getSession().getAttribute(Constant.USER_SESSION);
 
     }
