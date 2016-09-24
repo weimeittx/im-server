@@ -1,4 +1,22 @@
 angular.module('imService', [])
+  .filter('fromartShortContent', function () {
+    return function (history, loginUser) {
+      if (!history.message) {
+        return "";
+      }
+      if (history.user) {
+        return history.message.content;
+      } else {
+        var result = undefined;
+        if (history.message.from.id == loginUser.id) {
+          result = history.message.content
+        } else {
+          result = history.message.from.nickname + ":" + history.message.content;
+        }
+        return result
+      }
+    }
+  })
   .service("userService", function () {
     this.user = undefined;
   })
@@ -19,7 +37,7 @@ angular.module('imService', [])
       var onOpens = [];
       var eventBus = undefined;
       var isRun = false;
-      this.init = function () {
+      this.start = function () {
         try {
           eventBus = new vertx.EventBus("http://localhost:8080/eventbus");
         } catch (e) {
@@ -27,6 +45,7 @@ angular.module('imService', [])
         }
         isRun = true;
         eventBus.onopen = function () {
+          console.log("启动推送服务成功")
           angular.forEach(onOpens, function (listener) {
             listener();
           })
@@ -85,7 +104,7 @@ angular.module('imService', [])
     this.getHistory = function (f) {
       if (userService.user) {
         $http({
-          url: '/IM/web/src/main/webapp/data/chatHistory.json'
+          url: '/userChatHistory/getUserChatHistory'
         }).success(f)
       }
     };
@@ -94,7 +113,7 @@ angular.module('imService', [])
      */
     this.getHistoryMessage = function (history, f) {
       $http({
-        url: "/IM/web/src/main/webapp/data/historyMessage.json",
+        url: "/im-server/web/src/main/webapp/data/historyMessage.json",
         data: {
           to: history.id,
           type: history.type
@@ -104,21 +123,42 @@ angular.module('imService', [])
     }
   })
   .service('chatService', function ($http, userService) {
+    var cache = {};
+    //获取好友
     this.getChat = function (f) {
+
       if (userService.user) {
+
+        if (cache.getChat) {
+          f(cache.getChat);
+          return;
+        }
+
         $http({
-          url: "/IM/web/src/main/webapp/data/contactChat.json",
+          url: "/user/getFriends",
           method: "post"
-        }).success(f)
+        }).success(function (result) {
+          cache.getChat = result;
+          f(result);
+        })
       }
     };
+    //删除指定缓存
+    this.removeCache = function (key) {
+      cache[key] = undefined
+    }
+    //删除所有缓存
+    this.clearCache = function () {
+      cache = {}
+    }
 
   })
   .service('chatGroupService', function ($http, userService) {
+    //获取聊天组
     this.getChatGroup = function (f) {
       if (userService.user) {
         $http({
-          url: "/IM/web/src/main/webapp/data/contactChatGroup.json",
+          url: "/chatGroup/getChatGroup",
           method: "post"
         }).success(f)
       }
@@ -126,7 +166,7 @@ angular.module('imService', [])
     this.getChatGroupMembers = function (chatGroupId, f) {
       if (userService.user) {
         $http({
-          url: "/IM/web/src/main/webapp/data/chatGroupMembers.json",
+          url: "/im-server/web/src/main/webapp/data/chatGroupMembers.json",
           data: {
             id: chatGroupId
           }
@@ -134,10 +174,24 @@ angular.module('imService', [])
       }
     }
   })
+  .service('messageService', function ($http, eventBusService) {
+    this.sendChatMessage = function (message, f) {
+      $http({
+        url: "/message/sendMessage",
+        method: "post",
+        data: message
+      }).success(f)
+    }
+    this.sendChatGroupMessage = function (message) {
+      $http({
+        url: ""
+      }).success(f)
+    }
+  })
   .service("loginService", function ($http) {
     this.login = function (username, password, f) {
       $http({
-        url: "/IM/web/src/main/webapp/data/login.json",
+        url: "/user/login",
         method: "post",
         data: {
           username: username,

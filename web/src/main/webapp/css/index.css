@@ -72,7 +72,7 @@ body {
 .left {
     -webkit-app-region: drag;
     position: relative;
-    background: #122b40;
+    background: #3E3E40;
     height: 100%;
     width: 50px;
     border-bottom-left-radius: 5px;
@@ -116,7 +116,7 @@ body {
 }
 
 .left ul li img:hover {
-    box-shadow: 0 0 10px #999;
+/ / box-shadow: 0 0 10 px #999;
 }
 
 .left ul li:hover .unactive {
@@ -178,7 +178,14 @@ body {
     list-style: none;
     padding: 0;
     margin: 0;
-    height: 540px;
+    height: 635px;
+    /*overflow-y: scroll; TODO */
+    width: 250px;
+    overflow-x: hidden;
+}
+
+.selected {
+    background: #CACDD3;
 }
 
 .chat-list ul .active:before {
@@ -246,12 +253,17 @@ body {
     color: #aaa;
     font-size: 12px;
     position: inherit;
-    left: 62px;
-    top: 32px;
+    /*left: 62px;*/
+    /*top: 32px;*/
+    margin-top: 2px;
     z-index: 999;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.chat-list ul li:hover {
+.chat-list ul .no-selected:hover {
     background: #E2E4E6;
 }
 
@@ -373,7 +385,7 @@ body {
     height: 36px;
     width: 36px;
     margin: 10px 5px 10px 20px;
-    background: red;
+    /*background: red;*/
     -webkit-border-radius: 3px;
     -moz-border-radius: 3px;
     border-radius: 3px;
@@ -416,7 +428,7 @@ body {
     height: 36px;
     width: 36px;
     margin: 10px 20px 10px 5px;
-    background: red;
+    /*background: red;*/
     -webkit-border-radius: 3px;
     -moz-border-radius: 3px;
     border-radius: 3px;
@@ -497,7 +509,7 @@ body {
     color: #818181;
 }
 
-.main .contact-list ul li .contact-item:hover {
+.no-selected:hover {
     background: #E2E4E6;
 }
 
@@ -568,7 +580,7 @@ body {
 }
 
 .right .chatGroupInfo ul li:hover {
-    background: #E6E6E6;
+    background: #E2E4E6;
 }
 
 .right .chatGroupInfo ul li img {

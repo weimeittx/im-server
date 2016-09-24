@@ -2,6 +2,7 @@ package cn.dunn.service.impl;
 
 import cn.dunn.service.FileService;
 import com.mongodb.BasicDBObject;
+import com.mongodb.gridfs.GridFSDBFile;
 import com.mongodb.gridfs.GridFSFile;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -22,7 +23,8 @@ public class MongoFileService implements FileService {
     private GridFsTemplate gridFsTemplate;
 
     @Override
-    public GridFSFile getOneFile(String id) {
+    public GridFSDBFile getOneFile(String id) {
+           GridFSDBFile id1 = gridFsTemplate.findOne(Query.query(Criteria.where("_id").is(id)));
         return gridFsTemplate.findOne(Query.query(Criteria.where("_id").is(id)));
 
     }

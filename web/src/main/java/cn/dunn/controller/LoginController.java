@@ -7,6 +7,7 @@ import cn.dunn.mongo.UserRepository;
 import cn.dunn.util.MD5Util;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -24,7 +25,9 @@ public class LoginController {
 
     @RequestMapping("/login")
     @ResponseBody
-    public HttpResult login(String username, String password, HttpServletRequest request) {
+    public HttpResult login(@RequestBody User submitUser, HttpServletRequest request) {
+        String username = submitUser.getUsername();
+        String password = submitUser.getPassword();
         if (StringUtils.hasLength(username) && StringUtils.hasLength(password)) {
             User user = userRepository.getByUsernameAndPassword(username, MD5Util.MD5(password));
             if (user != null) {

@@ -2,6 +2,9 @@
   "chatName": "张三",
   "messages": [
     {
+      "from":{
+        "id":"123456"
+      },
       "chatId": "123456",
       "head": "head.png",
       "content": "<p>hehe</p>"

@@ -1,83 +1,122 @@
 package cn.dunn.mode;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.util.List;
 
 /**
  * 聊天组
  */
 @Document
 public class ChatGroup {
-    @Id
-    private String id;
-    /**
-     * 群聊名称
-     */
-    private String chatGroupName;
-    /**
-     * 公告
-     */
-    private String affiche;
-    /**
-     * 头像
-     */
-    private String head;
-    /**
-     * 用户在该群组中未读的消息条数
-     */
-    private Long unReadMessageCount;
 
-    /**
-     * 创建时间
-     */
-    private Long createTime;
+  public ChatGroup() {
 
-    public String getId() {
-        return id;
-    }
+  }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+  public ChatGroup(String id) {
+    this.id = id;
+  }
+
+  @Id
+  private String id;
+  /**
+   * 群聊名称
+   */
+  private String chatGroupName;
+  /**
+   * 公告
+   */
+  private String affiche;
+  /**
+   * 头像
+   */
+  private String head;
+  /**
+   * 用户在该群组中未读的消息条数
+   */
+  private Long unReadMessageCount;
+
+  /**
+   * 群成员个数
+   */
+  private Integer size;
+  private Long createTime;
+  /**
+   * 创建时间
+   */
 
 
-    public Long getCreateTime() {
-        return createTime;
-    }
+  /**
+   * 群成员
+   */
+  @DBRef
+  private List<User> members;
 
-    public void setCreateTime(Long createTime) {
-        this.createTime = createTime;
-    }
+  public List<User> getMembers() {
+    return members;
+  }
 
-    public String getChatGroupName() {
-        return chatGroupName;
-    }
+  public void setMembers(List<User> members) {
+    this.members = members;
+  }
 
-    public void setChatGroupName(String chatGroupName) {
-        this.chatGroupName = chatGroupName;
-    }
+  public Integer getSize() {
+    return size;
+  }
 
-    public String getAffiche() {
-        return affiche;
-    }
+  public void setSize(Integer size) {
+    this.size = size;
+  }
 
-    public void setAffiche(String affiche) {
-        this.affiche = affiche;
-    }
+  public String getId() {
+    return id;
+  }
 
-    public String getHead() {
-        return head;
-    }
+  public void setId(String id) {
+    this.id = id;
+  }
 
-    public void setHead(String head) {
-        this.head = head;
-    }
 
-    public Long getUnReadMessageCount() {
-        return unReadMessageCount;
-    }
+  public Long getCreateTime() {
+    return createTime;
+  }
 
-    public void setUnReadMessageCount(Long unReadMessageCount) {
-        this.unReadMessageCount = unReadMessageCount;
-    }
+  public void setCreateTime(Long createTime) {
+    this.createTime = createTime;
+  }
+
+  public String getChatGroupName() {
+    return chatGroupName;
+  }
+
+  public void setChatGroupName(String chatGroupName) {
+    this.chatGroupName = chatGroupName;
+  }
+
+  public String getAffiche() {
+    return affiche;
+  }
+
+  public void setAffiche(String affiche) {
+    this.affiche = affiche;
+  }
+
+  public String getHead() {
+    return head;
+  }
+
+  public void setHead(String head) {
+    this.head = head;
+  }
+
+  public Long getUnReadMessageCount() {
+    return unReadMessageCount;
+  }
+
+  public void setUnReadMessageCount(Long unReadMessageCount) {
+    this.unReadMessageCount = unReadMessageCount;
+  }
 }

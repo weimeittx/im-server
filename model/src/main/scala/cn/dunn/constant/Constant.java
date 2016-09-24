@@ -12,7 +12,7 @@ public class Constant {
     /**
      * to many 消息
      */
-    public static final String MESSAGE_TYPE_GROUP = "chatgroup";
+    public static final String MESSAGE_TYPE_GROUP = "chatGroup";
 
     /**
      * session常量
