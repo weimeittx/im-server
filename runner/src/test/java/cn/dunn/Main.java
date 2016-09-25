@@ -8,6 +8,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.mongodb.BasicDBList;
 import com.mongodb.CommandResult;
 import com.mongodb.DBObject;
+import com.mongodb.WriteResult;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.datagram.impl.InternetProtocolFamily;
@@ -18,6 +19,7 @@ import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
+import org.bson.types.ObjectId;
 import org.junit.Test;
 import org.junit.internal.runners.statements.RunAfters;
 import org.springframework.context.ApplicationContext;
@@ -27,12 +29,16 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.CriteriaDefinition;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
+import scala.math.Ordering;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Created by Administrator on 2016/9/19.
@@ -199,11 +205,12 @@ public class Main {
 
     Criteria criteria1 = Criteria.where("from").is(new User("57dfff487294a0af27bd7426")).and("to").is("57dfff487294a0af27bd7427");
     Criteria criteria2 = Criteria.where("from").is(new User("57dfff487294a0af27bd7427")).and("to").is("57dfff487294a0af27bd7426");
-    Criteria criteria3 = Criteria.where("createTime").lt(System.currentTimeMillis()).orOperator(criteria1,criteria2);
+    Criteria criteria3 = Criteria.where("createTime").lt(System.currentTimeMillis()).orOperator(criteria1, criteria2);
 //      .orOperator(Criteria.where("from").is(new User("57dfff487294a0af27bd7427")).and("to").is("57dfff487294a0af27bd7426"));
 //      .andOperator(Criteria.where("createTime").lt(System.currentTimeMillis()));
 
-    Query query = Query.query(criteria3).with(new PageRequest(0, 20)).with(new Sort(new Sort.Order(Sort.Direction.DESC, "createTime")));;//
+    Query query = Query.query(criteria3).with(new PageRequest(0, 20)).with(new Sort(new Sort.Order(Sort.Direction.DESC, "createTime")));
+    ;//
     List<Message> messages = mongoTemplate.find(query, Message.class);
     System.out.println(messages.size());
   }
@@ -246,6 +253,90 @@ public class Main {
     );
     System.out.println("监听开启成功 ... ");
     Thread.sleep(Integer.MAX_VALUE);
+  }
+
+  @Test
+  public void testMongo() {
+
+    ChatGroup chatGroup = new ChatGroup();
+    List<User> members = new ArrayList<>();
+    members.add(new User("57dfff487294a0af27bd7426"));
+    members.add(new User("57dfff487294a0af27bd7427"));
+    members.add(new User("57dfff487294a0af27bd7428"));
+    chatGroup.setChatGroupName("java群");
+    chatGroup.setAffiche("这是java群");
+    chatGroup.setHead("57e5551472947422655e9103");
+    chatGroup.setMembers(members);
+    chatGroup = chatGroupRepository.save(chatGroup);
+
+
+    groupMemberRepository.save(new GroupMember(chatGroup, new User("57dfff487294a0af27bd7426"), System.currentTimeMillis()));
+    groupMemberRepository.save(new GroupMember(chatGroup, new User("57dfff487294a0af27bd7427"), System.currentTimeMillis()));
+    groupMemberRepository.save(new GroupMember(chatGroup, new User("57dfff487294a0af27bd7428"), System.currentTimeMillis()));
+
+  }
+
+  @Test
+  public void testUpdateChatGroupMemebers() {
+    List<User> members = new ArrayList<>();
+    members.add(new User("57dfff487294a0af27bd7426"));
+    members.add(new User("57dfff487294a0af27bd7427"));
+    members.add(new User("57dfff487294a0af27bd7428"));
+    mongoTemplate.updateFirst(Query.query(Criteria.where("id").is("57e00817729418413bb32f1d")), Update.update("members", members), ChatGroup.class);
+  }
+
+  @Test
+  public void testGetMembers() {
+    ChatGroup chatGroup = mongoTemplate.findById("57e78e957294f4d1c27d2c4b", ChatGroup.class);
+    System.out.println(JSONObject.toJSONString(chatGroup));
+  }
+
+  @Test
+  public void testGetChatGroup() {
+    List<ChatGroup> chatGroups = mongoTemplate.find(Query.query(Criteria.where("members").elemMatch(Criteria.where("$id").is(new ObjectId("57dfff487294a0af27bd7428")))), ChatGroup.class);
+    System.out.println(chatGroups.size());
+    chatGroups.stream().forEach(chatGroup -> {
+      System.out.println(JSONObject.toJSONString(chatGroup));
+    });
+  }
+
+  @Test
+  public void filterTest() {
+    Stream.of(1, 2, 3, 4, 5).parallel().filter(i -> i == 3).forEach(i->{
+      try {
+        Thread.sleep(500);
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+      System.out.println(i);
+    });
+    System.out.println("suucess");
+  }
+
+  @Test
+  public void getChatGroupMessage() {
+    Criteria criteria = Criteria.where("createTime").lt(System.currentTimeMillis()).and("to").is("57e78e957294f4d1c27d2c4b").and("type").is("chatGroup");
+    Query query = Query.query(criteria);
+    List<Message> messages = mongoTemplate.find(query, Message.class);
+    messages.stream().forEach(message -> {
+      System.out.println(JSONObject.toJSONString(message));
+    });
+  }
+
+  @Test
+  public void getChatLastMessage() {
+    Criteria criteria1 = Criteria.where("from").is(new User("57dfff487294a0af27bd7426")).and("to").is("57dfff487294a0af27bd7427");
+    Criteria criteria2 = Criteria.where("from").is(new User("57dfff487294a0af27bd7427")).and("to").is("57dfff487294a0af27bd7426");
+    Criteria criteria3 = Criteria.where("type").is("chat").orOperator(criteria1, criteria2);
+    Query query = Query.query(criteria3).with(new PageRequest(0, 1)).with(new Sort(new Sort.Order(Sort.Direction.DESC, "createTime")));
+    Message one = mongoTemplate.findOne(query, Message.class);
+    System.out.println(JSONObject.toJSONString(one));
+  }
+
+  @Test
+  public void testFindByMemberAndChatGroup(){
+    GroupMember groupMember = groupMemberRepository.findByMemberAndChatGroup(new User("57dfff487294a0af27bd7427"), new ChatGroup("57e7d7ec729450330058db60"));
+    System.out.println(JSONObject.toJSONString(groupMember));
   }
 
 }

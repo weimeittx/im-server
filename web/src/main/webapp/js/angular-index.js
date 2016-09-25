@@ -31,56 +31,44 @@ angular.module('imApp', ['imService'])
       })
     }
   })
-  .controller('chatController', function ($scope, chatHistory, inputService, userService, messageService, eventBusService, chatService) {
-    var moveTop = function () {
-      console.log("需要移动");
-      var temp = undefined;
-      angular.forEach($scope.historys, function (t) {
-        var chat = t.user ? t.user : t.chatGroup;
-        if (chat.id == $scope.currentChat.id) {
-          $scope.del($scope.currentChat);
-          $scope.currentChat = chat
-          temp = t
+  .controller('chatController', function ($scope, chatHistory, inputService, userService, messageService, eventBusService, chatService, chatGroupService) {
+
+    /**
+     * 移动对话到最前
+     * @param userOrChatGroup
+     * @param message
+     */
+    var moveTop = function (userOrChatGroup, message) {
+      var delHistory = undefined;
+      var firstHistory = {
+        message: message
+      };
+      if (message.type == "chat") {
+        firstHistory.user = userOrChatGroup;
+      } else {
+        firstHistory.chatGroup = userOrChatGroup;
+      }
+      for (var i = 0; i < $scope.historys.length; i++) {
+        var tempHistory = $scope.historys[i];
+        var chat = tempHistory.user ? tempHistory.user : tempHistory.chatGroup;
+        if (chat.id == userOrChatGroup.id) {
+          delHistory = tempHistory;
+          delHistory.message = message;
+          break;
         }
-      });
-
-      $scope.historys.splice(0, 0, temp);
-    };
-    var isTop = function () {
-      if ($scope.historys.length > 1) {
-        var temp = $scope.historys[0];
-        var chat = temp.user ? temp.user : temp.chatGroup;
-        return chat.id == $scope.currentChat.id
       }
-      return false;
-    };
+      //从列表中找到需要删除的聊天对象
+      if (delHistory) {
+        //执行删除
+        $scope.del(delHistory, false);
+        if ($scope.currentChat) {
+          $scope.currentChat = userOrChatGroup;
 
-
-    var isTopBy = function (userOrChatGroup) {
-      if ($scope.historys.length > 1) {
-        var first = $scope.historys[0];
-        var chat = first.user ? first.user : first.chatGroup;
-        return chat.id == userOrChatGroup.id
-      }
-      return false;
-    };
-
-
-    var moveTopBy = function (history) {
-      var temp = undefined;
-      var id = history.user ? history.user.id : history.chatGroup.id;
-      angular.forEach($scope.historys, function (t) {
-        var chat = t.user ? t.user : t.chatGroup;
-        if (chat.id == id) {
-          temp = t;
         }
-      });
 
-      if (temp) {
-        $scope.del(temp);
-        $scope.historys.splice(0, 0, history);
       }
-    }
+      $scope.historys.splice(0, 0, firstHistory);
+    };
 
     $scope.historys = [];
     //当前聊天对象
@@ -89,27 +77,72 @@ angular.module('imApp', ['imService'])
       return message.from.id != userService.user.id
     };
     //删除最近聊天对象
-    $scope.del = function (chat) {
-      $scope.historys.splice($scope.historys.indexOf(chat), 1)
+    $scope.del = function (chat, flag) {
+      $scope.historys.splice($scope.historys.indexOf(chat), 1);
+      var id = chat.user ? chat.user.id : chat.chatGroup.id
+      if (!flag) {
+        chatHistory.delHistory(id);
+      }
+      //$scope.currentChat = undefined
     };
     $scope.continueChat = function (history) {
+      inputService.setFocus();
+      var unReadCount = history.unReadCount;
+      history.unReadCount = 0;
       var chat = undefined;
       if (history.user) {
         chat = history.user;
         $scope.title = chat.nickname;
+        $scope.currentChatType = "chat"// TODO
       } else {
         chat = history.chatGroup;
         $scope.title = chat.chatGroupName;
+        $scope.currentChatType = "chatGroup"// TODO
+      }
+
+      if ($scope.currentChat && $scope.currentChat.id == chat.id) {
+        console.log("重复点击");
+        return;
       }
       $scope.messages = [];
       $scope.currentChat = chat;
-      inputService.setFocus();
-      chatHistory.getHistoryMessage(chat, new Date().getTime(), function (result) {
-        if (result.success) {
-          console.log(result.result.messages)
-          $scope.messages = result.result.messages.reverse();
+      var topChat = undefined;
+      angular.forEach($scope.historys, function (temp) {
+        var tempChat = temp.user ? temp.user : temp.chatGroup;
+        if (chat.id == tempChat.id) {
+          topChat = tempChat;
         }
-      })
+      });
+      if (!topChat) {
+        $scope.historys.splice(0, 0, history);
+        chatHistory.moveEmptyMessageChatTop(chat.id, $scope.currentChatType);
+      }
+      if (history.user) {
+        chatHistory.getChatHistoryMessage(chat, new Date().getTime(), function (result) {
+          if (result.success) {
+            if (result.result.messages.length > 0) {
+              $scope.messages = result.result.messages.reverse();
+              for (var index in $scope.historys) {
+                var history = $scope.historys[index];
+                var chat = history.user ? history.user : history.chatGroup;
+                if (chat.id == $scope.currentChat.id) {
+                  history.message = $scope.messages[$scope.messages.length - 1]
+                  break;
+                }
+              }
+            }
+          }
+        })
+      } else {
+        chatHistory.getChatGroupHistoryMessage(chat, new Date().getTime(), function (result) {
+          if (result.success) {
+            if (result.result.messages.length > 0) {
+              $scope.messages = result.result.messages.reverse();
+            }
+          }
+        });
+      }
+
     };
 
 
@@ -122,26 +155,18 @@ angular.module('imApp', ['imService'])
       }
       var user = userService.user;
       var message = {
-        head: user.head,
-        type: 'chat',//TODO
+        type: $scope.currentChatType,//TODO
         to: $scope.currentChat.id,
         from: user,
         content: content,
         createTime: new Date().getTime()
       };
-      if (!isTop()) {
-        moveTop();
-      }
+      moveTop($scope.currentChat, message)
       $scope.messages.push(message);
-      $scope.historys[0] = {
-        user: $scope.currentChat,
-        message: message
-      }
       inputService.clearContent();
-      messageService.sendChatMessage(message, function () {
+      messageService.sendMessage(message, function () {
         console.log("发送成功!")
-      })
-      //$scope.$apply();
+      });
     };
 
 
@@ -152,7 +177,7 @@ angular.module('imApp', ['imService'])
         chatHistory.getHistory(function (result) {
           if (result.success) {
             console.log(result);
-            $scope.historys = result.result
+            $scope.historys = result.result ? result.result : [];
           }
         });
 
@@ -174,15 +199,7 @@ angular.module('imApp', ['imService'])
                     });
                     if (user) {
                       msg.from = user;
-                      var history = {
-                        user: user,
-                        message: msg
-                      };
-                      if (!isTopBy(user)) {
-                        moveTopBy(history);
-                      } else {
-                        $scope.historys[0] = history;
-                      }
+                      moveTop(user, msg);
                       if ($scope.currentChat && $scope.currentChat.id == msg.from.id) {
                         $scope.messages.push(msg)
                       } else {
@@ -195,6 +212,37 @@ angular.module('imApp', ['imService'])
                 });
                 break;
               case 'chatGroup':
+                console.log("接收到群消息 -->   ", msg);
+                chatGroupService.getChatGroup(function (result) {
+                  if (result.success) {
+                    var groupChat = undefined;
+                    for (var i = 0; i < result.result.length; i++) {
+                      var tempGroupChat = result.result[i];
+                      if (tempGroupChat.id == msg.to) {
+                        groupChat = tempGroupChat;
+                        break;
+                      }
+                    }
+                    //找到
+                    if (groupChat) {
+                      moveTop(groupChat, msg)
+                      console.log($scope.currentChat);
+                      if ($scope.currentChat && $scope.currentChat.id == groupChat.id) {
+                        console.log($scope.messages)
+                        if ($scope.messages) {
+                          $scope.messages.push(msg)
+                        } else {
+                          console.log("缓存消息1")
+                        }
+
+                      } else {
+                        console.log("缓存群消息2")
+                      }
+                      $scope.$apply()
+                      console.log($scope.currentChat);
+                    }
+                  }
+                });
                 break;
               default:
                 break;
@@ -217,12 +265,13 @@ angular.module('imApp', ['imService'])
       $scope.currentContact = chatItem;
     };
     $scope.viewChatGroupInfo = function (chatGroup) {
-      $scope.currentContact = chatGroup
-      $scope.viewInfo = 2
-      $scope.contactTitle = chatGroup.chatGroupName + " (" + chatGroup.size + "人)";
+      $scope.currentContact = chatGroup;
+      $scope.viewInfo = 2;
+      $scope.contactTitle = chatGroup.chatGroupName;
       chatGroupService.getChatGroupMembers(chatGroup.id, function (result) {
         if (result.success) {
-          $scope.chatGroup = result.result
+          $scope.chatGroup = result.result;
+          $scope.contactTitle = chatGroup.chatGroupName + " (" + chatGroup.members.length + "人)";
         }
       })
     };
@@ -244,15 +293,18 @@ angular.module('imApp', ['imService'])
 
     $scope.enterChat = function (chat) {
       $scope.$parent.currentNav = 1;
+      chat.type = "chat";
       $scope.$parent.continueChat({
-        chatName: chat.nickname,
-        id: chat.id,
-        type: "chat",
-        head: chat.head
+        user: chat
       })
     };
     $scope.enterGroupChat = function (chatGroup) {
-      console.log(chatGroup)
+      console.log(chatGroup);
+      $scope.$parent.currentNav = 1;
+      chatGroup.type = "chatGroup";
+      $scope.$parent.continueChat({
+        chatGroup: chatGroup
+      })
     }
 
   })

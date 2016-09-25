@@ -206,11 +206,28 @@ body {
     cursor: default;
 }
 
+.chat-list ul li .unReadCount{
+    position: absolute;
+    left: 43px;
+    top: 2px;
+    background: red;
+    text-align: center;
+    border-radius: 9px;
+    font-size: 12px;
+    padding: 3px;
+    font-weight: 900;
+    line-height: 12px;
+    min-width: 18px;
+    height: 18px;
+    color: #fff;
+}
+
 .chat-list ul li .item-1 {
     width: 64px;
     height: 64px;
     padding: 12px;
     float: left;
+    position: relative;
 }
 
 .chat-list ul li .item-1 img {
@@ -594,6 +611,9 @@ body {
 
 .right .chatGroupInfo ul li div {
     text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .start-chat {

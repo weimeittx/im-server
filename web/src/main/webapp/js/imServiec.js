@@ -108,19 +108,63 @@ angular.module('imService', [])
         }).success(f)
       }
     };
+
+    this.delHistory = function(id){
+        $http({
+          url:"/userChatHistory/delHistory?id="+id
+        }).success(function(result){
+            if(result.success){
+              console.log("删除历史聊天成功")
+            }else{
+              console.log("删除历史聊天失败")
+            }
+        })
+    }
     /**
-     * 获取历史聊天消息
+     * 获取好友历史聊天消息
      */
-    this.getHistoryMessage = function (history,lastTime, f) {
-      console.log(history)
+    this.getChatHistoryMessage = function (history, lastTime, f) {
       $http({
         url: "/message/getChatHistoryMessage",
         data: {
           id: history.id,
           time: lastTime
         },
-        method:"post"
+        method: "post"
       }).success(f)
+    };
+    /**
+     * 获取聊天群组的历史消息
+     * @param groupChat
+     * @param lastTime
+     * @param f
+     */
+    this.getChatGroupHistoryMessage = function (groupChat, lastTime, f) {
+      $http({
+        url: "/message/getChatGroupHistoryMessage",
+        data: {
+          id: groupChat.id,
+          time: lastTime
+        },
+        method: "post"
+      }).success(f)
+    };
+
+
+    /**
+     * 移动空消息对话到顶部
+     * @param chatId 会话ID userId or chatGroupID
+     * @param type chat or chatGroup
+     */
+    this.moveEmptyMessageChatTop = function (chatId, type) {
+
+      $http({
+        url: "/message/moveEmptyMessageChatTop?chatId=" + chatId + "&type=" + type,
+        method: "get"
+      }).success(function () {
+        console.log("success")
+      })
+
     }
   })
   .service('chatService', function ($http, userService) {
@@ -139,7 +183,9 @@ angular.module('imService', [])
           url: "/user/getFriends",
           method: "post"
         }).success(function (result) {
-          cache.getChat = result;
+          if (result.success) {
+            cache.getChat = result;
+          }
           f(result);
         })
       }
@@ -155,37 +201,47 @@ angular.module('imService', [])
 
   })
   .service('chatGroupService', function ($http, userService) {
+    var cache = {};
+    //删除指定缓存
+    this.removeCache = function (key) {
+      cache[key] = undefined
+    }
+    //删除所有缓存
+    this.clearCache = function () {
+      cache = {}
+    }
     //获取聊天组
     this.getChatGroup = function (f) {
       if (userService.user) {
+        if (cache.getChatGroup) {
+          f(cache.getChatGroup);
+          return;
+        }
         $http({
           url: "/chatGroup/getChatGroup",
           method: "post"
-        }).success(f)
+        }).success(function (result) {
+          if (result.success) {
+            cache.getChatGroup = result;
+          }
+          f(result);
+        })
       }
     }
     this.getChatGroupMembers = function (chatGroupId, f) {
       if (userService.user) {
         $http({
-          url: "/im-server/web/src/main/webapp/data/chatGroupMembers.json",
-          data: {
-            id: chatGroupId
-          }
+          url: "/chatGroup/getChatGroupMembers?id=" + chatGroupId
         }).success(f)
       }
     }
   })
   .service('messageService', function ($http, eventBusService) {
-    this.sendChatMessage = function (message, f) {
+    this.sendMessage = function (message, f) {
       $http({
         url: "/message/sendMessage",
         method: "post",
         data: message
-      }).success(f)
-    }
-    this.sendChatGroupMessage = function (message) {
-      $http({
-        url: ""
       }).success(f)
     }
   })

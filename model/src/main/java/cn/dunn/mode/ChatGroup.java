@@ -39,10 +39,6 @@ public class ChatGroup {
    */
   private Long unReadMessageCount;
 
-  /**
-   * 群成员个数
-   */
-  private Integer size;
   private Long createTime;
   /**
    * 创建时间
@@ -61,14 +57,6 @@ public class ChatGroup {
 
   public void setMembers(List<User> members) {
     this.members = members;
-  }
-
-  public Integer getSize() {
-    return size;
-  }
-
-  public void setSize(Integer size) {
-    this.size = size;
   }
 
   public String getId() {

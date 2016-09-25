@@ -29,6 +29,14 @@ public class GroupMember {
      * 该成员在群组中最后读取的消息时间
      */
     private Long lastReadTime;
+    public GroupMember(){
+
+    }
+    public GroupMember(ChatGroup chatGroup, User member, Long lastReadTime) {
+        this.chatGroup = chatGroup;
+        this.member = member;
+        this.lastReadTime = lastReadTime;
+    }
 
     public User getMember() {
         return member;

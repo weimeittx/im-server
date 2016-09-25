@@ -32,11 +32,23 @@ public class ChatHistory {
   private User user;
 
   /**
+   * 未读消息条数
+   */
+  private Long unReadCount;
+  /**
    * 最后发送的消息
    */
   @DBRef
   private Message message;
 
+
+  public Long getUnReadCount() {
+    return unReadCount;
+  }
+
+  public void setUnReadCount(Long unReadCount) {
+    this.unReadCount = unReadCount;
+  }
 
   public User getUser() {
     return user;
