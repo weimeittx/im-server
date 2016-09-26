@@ -35,6 +35,9 @@ public class UserChatHistoryController {
   @ResponseBody
   public HttpResult getUserChatHistory(HttpServletRequest request) {
     UserChatHistory result = mongoTemplate.findOne(Query.query(Criteria.where("user").is(WebUtil.loginUser(request))), UserChatHistory.class);
+    if(result == null){
+      return new HttpResult(new LinkedList<ChatHistory>());
+    }
     return new HttpResult(result.getChatHistorys());
   }
 

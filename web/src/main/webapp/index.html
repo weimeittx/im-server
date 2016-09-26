@@ -5,10 +5,11 @@
   <title>聊天</title>
   <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
   <link rel="stylesheet" type="text/css" href="css/index.css"/>
+  <link rel="stylesheet" type="text/css" href="css/scrollbar.css"/>
 
-  <!--<script type="text/javascript" src="js/jquery-2.1.0.js"></script>-->
+  <script type="text/javascript" src="js/jquery-2.1.0.js"></script>
   <!--<script type="text/javascript" src="js/bootstrap.js"></script>-->
-  <!--<script type="text/javascript" src="js/index.js"></script>-->
+  <script type="text/javascript" src="js/jquery.tinyscrollbar.min.js"></script>
   <script type="text/javascript" charset="utf-8" src="uedit/ueditor.config.js"></script>
   <script type="text/javascript" charset="utf-8" src="uedit/ueditor.all.min.js"></script>
   <script type="text/javascript" charset="utf-8" src="uedit/lang/zh-cn/zh-cn.js"></script>
@@ -18,7 +19,13 @@
   <script type="text/javascript" charset="utf-8" src="js/angular.min.js"></script>
   <script type="text/javascript" charset="utf-8" src="js/imServiec.js"></script>
   <script type="text/javascript" charset="utf-8" src="js/angular-index.js"></script>
-
+  <script type="text/javascript">
+//    $(document).ready(function () {
+//      $.each($('.scrollbar-area'), function (e) {
+//        $(e).tinyscrollbar();
+//      })
+//    });
+  </script>
 
 </head>
 <body ng-controller="bodyController">
@@ -39,7 +46,7 @@
   <!--导航-->
   <div class="left">
     <ul ng-controller="navController">
-      <li><img ng-if="user" ng-src="/file/view/{{user.head}}"></li>
+      <li class="view-user-info" ng-click="viewUserInfo(user)"><img ng-if="user" ng-src="/file/view/{{user.head}}"></li>
       <li ng-click="switchNav(1)"><span ng-class="{true:' active',false:'unactive'}[currentNav == 1]"
                                         class="glyphicon glyphicon-envelope"></span></li>
       <li ng-click="switchNav(2)"><span ng-class="{true:' active',false:'unactive'}[currentNav == 2]"
@@ -63,7 +70,7 @@
       <li ng-click="continueChat(history)" ng-repeat="history in historys"
           ng-class="{true:'selected',false:'no-selected'}[history.user?history.user.id==currentChat.id:history.chatGroup.id==currentChat.id]">
         <div class="item-1">
-          <span class="unReadCount" ng-show="history.unReadCount > 0">{{history.unReadCount}}</span>
+          <span class="unReadCount" ng-show="history.unReadCount">{{history.unReadCount}}</span>
           <img ng-src="/file/view/{{history.user?history.user.head:history.chatGroup.head}}">
         </div>
         <div class="item-2">
@@ -75,7 +82,7 @@
           </div>
         </div>
         <div class="item-3">
-          <span ng-click="del(history)" class="close glyphicon glyphicon-remove"></span>
+          <span ng-click="del(history, true)" class="close glyphicon glyphicon-remove"></span>
           <span class="date">{{history.message.createTime | date:'HH:mm'}}</span>
         </div>
 
@@ -100,12 +107,12 @@
       </div>
     </div>
     <div class="chat-main" ng-show="currentChat">
-      <div class="message-view">
+      <div class="message-view scrollbar-area">
 
         <div
           ng-class="{true: 'left-message message', false: 'right-message message'}[isLeft(message)]"
           ng-repeat="message in messages">
-          <img ng-src="/file/view/{{message.from.head}}">
+          <img class="view-user-info" ng-click="viewUserInfo(message.from)" ng-src="/file/view/{{message.from.head}}">
 
           <div class="content-message">
             {{message.content}}
@@ -115,7 +122,7 @@
       </div>
       <div class="split"></div>
       <div class="chat-input">
-        <script id="editor" type="text/plain" style="width:100%;height:149px;"></script>
+        <script id="editor" type="text/plain" style="width:100%"></script>
       </div>
       <div class="operation">
         <a id="send" class="btn btn-default btn-sm send" ng-click="send()">发送</a>

@@ -134,6 +134,7 @@ div.edui-box {
 /*UI工具栏、编辑区域、底部*/
 .edui-default .edui-editor {
     /*border: 1px solid #d4d4d4; TODO 边框*/
+    /*border: 1px solid red;*/
     background-color: white;
     position: relative;
     overflow: visible;
@@ -313,8 +314,8 @@ div.edui-box {
 
 .edui-default .edui-list .edui-state-hover {
     position: relative;
-    background-color: #fff5d4;
-    border: 1px solid #dcac6c;
+    background-color: #ECECEC;/*图标背景颜色 TODO*/
+    border: 1px solid #CACDD3;/*图标边框颜色 TODO*/
     padding: 0;
 }
 
@@ -455,8 +456,8 @@ div.edui-box {
 }
 
 .edui-default .edui-toolbar .edui-state-hover .edui-combox-body {
-    background-color: #fff5d4;
-    border: 1px solid #dcac6c;
+    background-color: #ECECEC;/*图标背景颜色 TODO*/
+    border: 1px solid #CACDD3;/*图标边框颜色 TODO*/
 }
 
 .edui-default .edui-toolbar .edui-state-hover .edui-combox-body .edui-arrow {
@@ -498,15 +499,15 @@ div.edui-box {
 }
 
 .edui-default .edui-toolbar .edui-button .edui-state-hover .edui-button-wrap {
-    background-color: #fff5d4;
     padding: 0;
-    border: 1px solid #dcac6c;
+    background-color: #ECECEC;/*图标背景颜色 TODO*/
+    border: 1px solid #CACDD3;/*图标边框颜色 TODO*/
 }
 
 .edui-default .edui-toolbar .edui-button .edui-state-checked .edui-button-wrap {
-    background-color: #ffe69f;
+    background-color: #ECECEC;/*图标背景颜色 TODO*/
     padding: 0;
-    border: 1px solid #dcac6c;
+    border: 1px solid #CACDD3;/*图标边框颜色 TODO*/
     border-radius: 2px;
     -webkit-border-radius: 2px;
     -moz-border-radius: 2px;
@@ -980,8 +981,8 @@ div.edui-box {
 
 .edui-default .edui-toolbar .edui-splitbutton .edui-state-hover .edui-splitbutton-body,
 .edui-default .edui-toolbar .edui-menubutton .edui-state-hover .edui-menubutton-body {
-    background-color: #fff5d4;
-    border: 1px solid #dcac6c;
+    background-color: #ECECEC;/*图标背景颜色 TODO*/
+    border: 1px solid #CACDD3;/*图标边框颜色 TODO*/
     padding: 0;
 }
 
@@ -1818,8 +1819,8 @@ div.edui-box {
 
 .edui-default .edui-menu-body .edui-state-hover {
     padding: 0 !important;
-    background-color: #fff5d4;
-    border: 1px solid #dcac6c;
+    background-color: #ECECEC;/*图标背景颜色 TODO*/
+    border: 1px solid #CACDD3;/*图标边框颜色 TODO*/
 }
 /*弹出菜单*/
 .edui-default .edui-shortcutmenu {

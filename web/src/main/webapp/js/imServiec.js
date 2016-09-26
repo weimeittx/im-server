@@ -81,6 +81,11 @@ angular.module('imService', [])
   )
   .service('inputService', function () {
       var ue = UE.getEditor('editor');
+
+      //var ue = new UE.ui.Editor();
+      //ue.render("textarea");
+
+
       this.getContent = function () {
         return ue.getContent();
       };
@@ -109,16 +114,16 @@ angular.module('imService', [])
       }
     };
 
-    this.delHistory = function(id){
-        $http({
-          url:"/userChatHistory/delHistory?id="+id
-        }).success(function(result){
-            if(result.success){
-              console.log("删除历史聊天成功")
-            }else{
-              console.log("删除历史聊天失败")
-            }
-        })
+    this.delHistory = function (id) {
+      $http({
+        url: "/userChatHistory/delHistory?id=" + id
+      }).success(function (result) {
+        if (result.success) {
+          console.log("删除历史聊天成功")
+        } else {
+          console.log("删除历史聊天失败")
+        }
+      })
     }
     /**
      * 获取好友历史聊天消息
@@ -164,7 +169,17 @@ angular.module('imService', [])
       }).success(function () {
         console.log("success")
       })
+    }
 
+    this.setUnReadCount = function (historys, chat_id, f) {
+      for (var index in historys) {
+        var history = historys[index];
+        var chatId = history.user ? history.user.id : history.chatGroup.id
+        if (chatId == chat_id) {
+          history.unReadCount = f(history.unReadCount);
+          break;
+        }
+      }
     }
   })
   .service('chatService', function ($http, userService) {

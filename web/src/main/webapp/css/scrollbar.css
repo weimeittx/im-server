@@ -1,0 +1,121 @@
+.scrollbar-area {
+    position: relative;
+    /*width: 520px;*/
+    /*margin-left: calc(50% - 260px);*/
+    /*margin-top: 200px;*/
+    /*border: 1px solid red;*/
+}
+
+.scrollbar-area .viewport {
+    /*width: 500px;*/
+    height: 200px;
+    overflow: hidden;
+    position: relative;
+}
+
+.scrollbar-area .overview {
+    list-style: none;
+    position: absolute;
+    left: 0;
+    top: 0;
+    padding: 0;
+    margin: 0;
+}
+
+.scrollbar-area .scrollbar {
+    position: absolute;
+    /*background-position: 0 0;*/
+    /*width: 15px;*/
+    right: 0;
+    z-index: 99;
+}
+
+.scrollbar-area .track {
+    background-color: transparent;
+    /*background-color: #ccc;*/
+    height: 100%;
+    width: 6px;
+    position: relative;
+
+}
+
+.scrollbar-area .thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    height: 20px;
+    width: 6px;
+    cursor: pointer;
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    left: 0;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+}
+
+.scrollbar-area .thumb:hover {
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+.scrollbar-area .disable {
+    display: none;
+}
+
+
+
+
+
+
+
+.scrollbar-area:hover::-webkit-scrollbar-thumb {
+    width: 15px;
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+.scrollbar-area:hover::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+
+
+::-webkit-scrollbar {
+    background: transparent;
+    overflow: visible;
+    width: 6px;
+}
+
+/*滚动条*/
+::-webkit-scrollbar-thumb {
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: blue;
+}
+
+::-webkit-scrollbar-thumb:horizontal {
+    border-width: 4px 6px;
+    min-width: 40px;
+}
+
+::-webkit-scrollbar-thumb:vertical {
+    border-width: 6px 4px;
+    min-height: 40px;
+}
+
+/*未滚动部分*/
+::-webkit-scrollbar-track-piece {
+    background: transparent;
+}
+
+::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
+/*::-webkit-scrollbar-button{*/
+/*background: red;*/
+/*width: 5px;*/
+/*height: 5px;*/
+/*}*/

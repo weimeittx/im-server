@@ -15,6 +15,10 @@ body {
     background-size: 100%;;
 }
 
+.view-user-info {
+    cursor: pointer;
+}
+
 .main {
     width: 1200px;
     height: 700px;
@@ -206,7 +210,7 @@ body {
     cursor: default;
 }
 
-.chat-list ul li .unReadCount{
+.chat-list ul li .unReadCount {
     position: absolute;
     left: 43px;
     top: 2px;
@@ -419,6 +423,7 @@ body {
     -moz-border-radius: 3px;
     border-radius: 5px;
     background: #98E165;
+    max-width: 700px;
 }
 
 .right .chat-main .message-view .left-message .content-message:before {
@@ -463,6 +468,7 @@ body {
     -moz-border-radius: 3px;
     border-radius: 5px;
     background: #98E165;
+    max-width: 700px;
 }
 
 .right .chat-main .message-view .right-message .content-message:before {
