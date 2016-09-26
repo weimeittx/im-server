@@ -4,9 +4,6 @@ html, body {
 }
 
 
-
-
-
 *:hover::-webkit-scrollbar-thumb {
     width: 6px;
     background-color: rgba(0, 0, 0, 0.2);

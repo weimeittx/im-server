@@ -213,7 +213,7 @@ body {
 .chat-list ul li .unReadCount {
     position: absolute;
     left: 43px;
-    top: 2px;
+    top: 5px;
     background: red;
     text-align: center;
     border-radius: 9px;
@@ -397,12 +397,26 @@ body {
     overflow-y: scroll;
 }
 
+.right .chat-main .unReadMessageHint{
+    background: #BADAF8;
+    display: inherit;
+    font-size: 14px;
+    padding: 2px;
+    color: #000;
+    line-height: 22px;
+    position: static;
+}
+.right .chat-main .unReadMessageHint img{
+    width: 18px;
+    height:18px;
+    margin: 2px;
+}
 .right .chat-main .message-view .message {
     width: 100%;
     margin: 5px auto;
 }
 
-.right .chat-main .message-view .left-message img {
+.right .chat-main .message-view .left-message .message-head {
     height: 36px;
     width: 36px;
     margin: 10px 5px 10px 20px;
@@ -426,6 +440,13 @@ body {
     max-width: 700px;
 }
 
+.content-message img {
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    max-width: 650px;
+}
+
 .right .chat-main .message-view .left-message .content-message:before {
     display: inline-block;
     content: "";
@@ -445,7 +466,7 @@ body {
     float: right;
 }
 
-.right .chat-main .message-view .right-message img {
+.right .chat-main .message-view .right-message .message-head {
     float: right;
     height: 36px;
     width: 36px;
