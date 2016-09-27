@@ -4,6 +4,7 @@ import com.mongodb.gridfs.GridFSDBFile;
 import com.mongodb.gridfs.GridFSFile;
 
 import java.io.InputStream;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -17,4 +18,9 @@ public interface FileService {
     GridFSFile saveFile(InputStream inputStream, String fileName, String type, Map<String, Object> metadata);
 
     void deleteFile(String id);
+
+
+    GridFSFile getFileByMD5(String md5);
+
+    List<GridFSDBFile> getFilesByUSerId(String userId);
 }

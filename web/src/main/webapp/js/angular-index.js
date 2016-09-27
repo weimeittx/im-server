@@ -180,6 +180,9 @@ angular.module('imApp', ['imService'])
         console.log('请输入文本!');
         return;
       }
+      var _content = $(content);
+      _content.find("img").attr("onclick", "viewImg(this)");
+      content = _content[0].outerHTML;
       var user = userService.user;
       var message = {
         type: $scope.currentChatType,//TODO

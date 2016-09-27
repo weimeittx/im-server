@@ -1,99 +1,122 @@
 package com.baidu.ueditor.upload;
 
-import com.baidu.ueditor.PathFormat;
+import cn.dunn.service.FileService;
+import cn.dunn.util.WebUtil;
 import com.baidu.ueditor.define.AppInfo;
 import com.baidu.ueditor.define.BaseState;
 import com.baidu.ueditor.define.FileType;
 import com.baidu.ueditor.define.State;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
+import com.mongodb.gridfs.GridFSFile;
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.springframework.util.StringUtils;
+import org.springframework.web.context.WebApplicationContext;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class BinaryUploader {
 
-	public static final State save(HttpServletRequest request,
-			Map<String, Object> conf) {
-		FileItemStream fileStream = null;
-		boolean isAjaxUpload = request.getHeader( "X_Requested_With" ) != null;
+  private static FileService fileService;
 
-		if (!ServletFileUpload.isMultipartContent(request)) {
-			return new BaseState(false, AppInfo.NOT_MULTIPART_CONTENT);
-		}
+  private static FileService getFileService(HttpServletRequest request) {
+    if (fileService == null) {
+      WebApplicationContext application = (WebApplicationContext) request.getServletContext().getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE);
+      fileService = application.getBean(FileService.class);
+    }
+    return fileService;
+  }
 
-		ServletFileUpload upload = new ServletFileUpload(
-				new DiskFileItemFactory());
+  public static final State save(HttpServletRequest request,
+                                 Map<String, Object> conf) {
+    FileItemStream fileStream = null;
+    boolean isAjaxUpload = request.getHeader("X_Requested_With") != null;
 
-        if ( isAjaxUpload ) {
-            upload.setHeaderEncoding( "UTF-8" );
-        }
+    if (!ServletFileUpload.isMultipartContent(request)) {
+      return new BaseState(false, AppInfo.NOT_MULTIPART_CONTENT);
+    }
 
-		try {
-			FileItemIterator iterator = upload.getItemIterator(request);
+    ServletFileUpload upload = new ServletFileUpload(
+      new DiskFileItemFactory());
 
-			while (iterator.hasNext()) {
-				fileStream = iterator.next();
+    if (isAjaxUpload) {
+      upload.setHeaderEncoding("UTF-8");
+    }
 
-				if (!fileStream.isFormField())
-					break;
-				fileStream = null;
-			}
+    try {
+      FileItemIterator iterator = upload.getItemIterator(request);
 
-			if (fileStream == null) {
-				return new BaseState(false, AppInfo.NOTFOUND_UPLOAD_DATA);
-			}
+      while (iterator.hasNext()) {
+        fileStream = iterator.next();
 
-			String savePath = (String) conf.get("savePath");
-			String originFileName = fileStream.getName();//获取原始文件名称
-			String suffix = FileType.getSuffixByFilename(originFileName);//获取后缀
+        if (!fileStream.isFormField())
+          break;
+        fileStream = null;
+      }
 
-			originFileName = originFileName.substring(0,
-					originFileName.length() - suffix.length());
-			savePath = savePath + suffix;
+      if (fileStream == null) {
+        return new BaseState(false, AppInfo.NOTFOUND_UPLOAD_DATA);
+      }
 
-			long maxSize = ((Long) conf.get("maxSize")).longValue();
+      String originFileName = fileStream.getName();//获取原始文件名称
+      String suffix = FileType.getSuffixByFilename(originFileName);//获取后缀
 
-			if (!validType(suffix, (String[]) conf.get("allowFiles"))) {
-				return new BaseState(false, AppInfo.NOT_ALLOW_FILE_TYPE);
-			}
+      originFileName = originFileName.substring(0,
+        originFileName.length() - suffix.length());
 
-			savePath = PathFormat.parse(savePath, originFileName);
 
-			String physicalPath = conf.get("rootPath") + savePath;
+      if (!validType(suffix, (String[]) conf.get("allowFiles"))) {
+        return new BaseState(false, AppInfo.NOT_ALLOW_FILE_TYPE);
+      }
 
-			InputStream is = fileStream.openStream();
-			State storageState = StorageManager.saveFileByInputStream(is,
-					physicalPath, maxSize);
-			is.close();
 
-			//TODO
-			if (storageState.isSuccess()) {
-				storageState.putInfo("url", PathFormat.format(savePath));
-				storageState.putInfo("type", suffix);
-				storageState.putInfo("original", originFileName + suffix);
-			}
+      InputStream is = fileStream.openStream();
+      FileService fileService = getFileService(request);
+      Map<String, Object> metadata = new HashMap<>();
+      try {
+        metadata.put("user", WebUtil.loginUser(request).getId());
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+      GridFSFile file = null;
+      String md5 = request.getParameter("_md5_");
+      if(StringUtils.hasLength(md5)){
+        file = fileService.getFileByMD5(md5);
+      }
+      if(file == null){
+        file = fileService.saveFile(is, originFileName, suffix, metadata);
+      }
+      State storageState = new BaseState(true);
+      storageState.putInfo("size", file.getLength());
+      storageState.putInfo("title", file.getId().toString());
+      is.close();
 
-			return storageState;
-		} catch (FileUploadException e) {
-			return new BaseState(false, AppInfo.PARSE_REQUEST_ERROR);
-		} catch (IOException e) {
-		}
-		return new BaseState(false, AppInfo.IO_ERROR);
-	}
+      //TODO
+      if (storageState.isSuccess()) {
+        storageState.putInfo("url", "/file/view/" + file.getId() + suffix);
+        storageState.putInfo("type", suffix);
+        storageState.putInfo("original", originFileName + suffix);
+      }
 
-	private static boolean validType(String type, String[] allowTypes) {
-		List<String> list = Arrays.asList(allowTypes);
+      return storageState;
+    } catch (FileUploadException e) {
+      return new BaseState(false, AppInfo.PARSE_REQUEST_ERROR);
+    } catch (IOException e) {
+    }
+    return new BaseState(false, AppInfo.IO_ERROR);
+  }
 
-		return list.contains(type);
-	}
+  private static boolean validType(String type, String[] allowTypes) {
+    List<String> list = Arrays.asList(allowTypes);
+
+    return list.contains(type);
+  }
 }

@@ -23736,6 +23736,13 @@ UE.plugin.register('music', function (){
 UE.plugin.register('autoupload', function (){
 
     function sendAndInsertFile(file, editor) {
+
+
+
+
+
+
+
         var me  = editor;
         //模拟数据
         var fieldName, urlPrefix, maxSize, allowFiles, actionUrl,
@@ -23821,21 +23828,36 @@ UE.plugin.register('autoupload', function (){
 
         fd.append(fieldName, file, file.name || ('blob.' + file.type.substr('image/'.length)));
         fd.append('type', 'ajax');
-        xhr.open("post", url, true);
-        xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-        xhr.addEventListener('load', function (e) {
-            try{
-                var json = (new Function("return " + utils.trim(e.target.response)))();
-                if (json.state == 'SUCCESS' && json.url) {
-                    successHandler(json);
-                } else {
-                    errorHandler(json.state);
+
+        var fileReader = new FileReader();
+        fileReader.onload  = function() {
+            var arrayBuffer = this.result; // arrayBuffer即为blob对应的arrayBuffer
+            var spark = new SparkMD5.ArrayBuffer();
+            spark.append(arrayBuffer);
+
+
+            xhr.open("post", url+"&_md5_="+spark.end(), true);
+            xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+            xhr.addEventListener('load', function (e) {
+                try{
+                    var json = (new Function("return " + utils.trim(e.target.response)))();
+                    if (json.state == 'SUCCESS' && json.url) {
+                        successHandler(json);
+                    } else {
+                        errorHandler(json.state);
+                    }
+                }catch(er){
+                    errorHandler(me.getLang('autoupload.loadError'));
                 }
-            }catch(er){
-                errorHandler(me.getLang('autoupload.loadError'));
-            }
-        });
-        xhr.send(fd);
+            });
+
+            xhr.send(fd);
+
+
+        };
+        fileReader.readAsArrayBuffer(file);
+
+
     }
 
     function getPasteImage(e){

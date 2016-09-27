@@ -1,34 +1,37 @@
 $(function () {
-    $(function () {
-        $("[data-toggle='tooltip']").tooltip();
-    });
-    var ue = UE.getEditor('editor');
-    $("#send").bind('click', function () {
-        var content = ue.getContent()
-        console.debug(content)
-    })
-    $("#login-btn").bind('click', function () {
-        var username = $('#username').val()
-        var password = $('#password').val()
-        $.post("/user/login", {username: username, password: password}, function (result) {
-            if (result.success) {
-                alert("登录成功")
-                window.loginUser = result.result
-            } else {
-                alert("登录失败")
-            }
-        })
-    })
+  $("[data-toggle='tooltip']").tooltip();
+});
 
-})
+function viewImg(img) {
+  var _img = $(img);
+  var viewImg = $('.img-view img');
+  viewImg.attr("src", _img.attr('src'));
+  $(".img-view a").attr("href", _img.attr('src'));
+  var theImage = new Image();
+  theImage.src = _img.attr("src");
+  var width = theImage.width;
+  var height = theImage.height;
 
-function initChats() {
-    $.get("/user/getFriends",function(){
 
-    })
+  var top = undefined;
+  if (height > 700) {
+    top = 0
+  } else {
+    top = 700 / 2 - height / 2
+  }
+  if (top == 0) {
+    var newHeight = height / width * 1200;
+    top = 700 / 2 - height / newHeight
+  } else {
+    top = (700 / 2 - height / 2) * 2
+  }
+
+  viewImg.css({
+    "margin-top": top / 2 + 'px'
+  })
+  $(".img-view").show();
 }
-function initChatGroups() {
-    $.get("/user/getChatGroups",function(){
 
-    })
+function closeImgView() {
+  $(".img-view").hide();
 }
