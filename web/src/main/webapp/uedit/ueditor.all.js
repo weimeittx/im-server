@@ -23836,7 +23836,7 @@ UE.plugin.register('autoupload', function (){
             spark.append(arrayBuffer);
 
 
-            xhr.open("post", url+"&_md5_="+spark.end(), true);
+            xhr.open("post", url+"&_md5_="+spark.end()+"&paste=img", true);
             xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
             xhr.addEventListener('load', function (e) {
                 try{

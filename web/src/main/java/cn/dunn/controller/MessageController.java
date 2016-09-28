@@ -225,6 +225,9 @@ public class MessageController {
         String oldChatId = next.getUser() != null ? next.getUser().getId() : next.getChatGroup().getId();
         if (oldChatId.equals(chatId)) {
           Long unReadCont = next.getUnReadCount() == null ? 0 : next.getUnReadCount();
+          if(unReadCont == 0){
+            first.setStartUnReadMessage(message);
+          }
           first.setUnReadCount(++unReadCont);
           iterator.remove();
           break;
@@ -236,6 +239,7 @@ public class MessageController {
       userChatHistory = new UserChatHistory();
       userChatHistory.setUser(new User(userId));
       LinkedList<ChatHistory> chatHistorys = new LinkedList<>();
+      first.setStartUnReadMessage(message);
       first.setUnReadCount(1L);
       chatHistorys.add(first);
       userChatHistory.setChatHistorys(chatHistorys);

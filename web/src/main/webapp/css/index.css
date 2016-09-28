@@ -372,6 +372,7 @@ body {
     text-align: center;
     display: table-cell;
     top: 0;
+    float: right;
 }
 
 .right .title .win-oper .min:hover {
@@ -452,25 +453,51 @@ body {
     overflow-y: scroll;
 }
 
-.right .chat-main .unReadMessageHint {
-    background: #BADAF8;
-    display: inherit;
+.right .chat-main .message-hint {
+    background: #fff;
+    color: #74cc37;
     font-size: 14px;
-    padding: 2px;
-    color: #000;
-    line-height: 22px;
-    position: static;
+    padding: 6px 12px;
+    line-height: 30px;
+    margin-top: -50px;
+    margin-right: 20px;
+    position: absolute;
+    right: 0;
+    cursor: pointer;
+    border-radius: 3px;
+    border: 1px solid #ECECEC;
+    font-weight: 900;
 }
 
-.right .chat-main .unReadMessageHint img {
-    width: 18px;
-    height: 18px;
-    margin: 2px;
+.right .chat-main .message-hint .shut:hover {
+    -webkit-text-shadow: 0 0 5px #74cc37;
+    -moz-text-shadow: 0 0 5px #74cc37;
+    text-shadow: 0 0 5px #74cc37;
+}
+
+.right .chat-main .message-hint a {
+    color: #74cc37;
+}
+
+.right .chat-main .message-hint a:hover {
+    text-decoration: none;
+    color: #74cc37;
 }
 
 .right .chat-main .message-view .message {
     width: 100%;
-    margin: 5px auto;
+    margin: 15px auto;
+    /*position: relative;*/
+}
+
+.right .chat-main .message-view .message .content-message:hover.message-time {
+    display: block;
+}
+
+.right .chat-main .message-view .load-info {
+    text-align: center;
+    /*border-bottom:1px solid #ECECEC;*/
+    /*color: #98E165;*/
 }
 
 .right .chat-main .message-view .left-message .message-head {
@@ -483,11 +510,28 @@ body {
     border-radius: 3px;
 }
 
+.message-time {
+    display: none;
+}
+
+.left-message .message-time {
+    text-indent: 5px;
+    color: #bbb;
+    position: absolute;
+}
+
+.right-message .message-time {
+    color: #bbb;
+    position: absolute;
+    float: right;
+    right: 73px;
+}
+
 .right .chat-main .message-view .left-message .content-message {
     position: relative;
     display: inline-block;
     vertical-align: top;
-    margin-top: 7px;
+    margin-top: 20px;
     padding: 5px;
     margin-left: 5px;
     -webkit-border-radius: 3px;
@@ -544,7 +588,7 @@ body {
     position: relative;
     display: inline-block;
     vertical-align: top;
-    margin-top: 7px;
+    margin-top: 20px;
     padding: 5px;
     margin-right: 8px;
     -webkit-border-radius: 3px;
@@ -580,7 +624,7 @@ body {
 }
 
 .main .contact-list .contact-list-bottom {
-    overflow-y: scroll;
+    /*overflow-y: scroll;*/
     height: calc(100% - 65px);
 }
 

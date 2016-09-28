@@ -88,10 +88,14 @@ public class BinaryUploader {
       }
       GridFSFile file = null;
       String md5 = request.getParameter("_md5_");
-      if(StringUtils.hasLength(md5)){
+      String paste = request.getParameter("paste");
+      if (paste != null && paste.length() > 0) {
+        metadata.put("paste", paste);
+      }
+      if (StringUtils.hasLength(md5)) {
         file = fileService.getFileByMD5(md5);
       }
-      if(file == null){
+      if (file == null) {
         file = fileService.saveFile(is, originFileName, suffix, metadata);
       }
       State storageState = new BaseState(true);

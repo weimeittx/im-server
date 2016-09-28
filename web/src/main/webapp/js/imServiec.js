@@ -283,7 +283,7 @@ angular.module('imService', [])
       }).success(function () {
         console.log("success")
       })
-    }
+    };
 
     this.setUnReadCount = function (historys, chat_id, f) {
       for (var index in historys) {

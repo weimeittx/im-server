@@ -35,12 +35,26 @@ public class ChatHistory {
    * 未读消息条数
    */
   private Long unReadCount;
+
+  /**
+   * 一开始未读的消息
+   */
+  @DBRef
+  private Message startUnReadMessage;
   /**
    * 最后发送的消息
    */
   @DBRef
   private Message message;
 
+
+  public Message getStartUnReadMessage() {
+    return startUnReadMessage;
+  }
+
+  public void setStartUnReadMessage(Message startUnReadMessage) {
+    this.startUnReadMessage = startUnReadMessage;
+  }
 
   public Long getUnReadCount() {
     return unReadCount;

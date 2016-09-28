@@ -39,6 +39,26 @@ angular.module('imApp', ['imService'])
   })
   .controller('chatController', function ($scope, $sce, chatHistory, inputService, userService, messageService, eventBusService, chatService, chatGroupService, scrollService, utilService) {
 
+    var loadInfo = true;
+
+    var lastMessage = undefined;
+    $(".message-view").scroll(function () {
+      if ($(".message-view").scrollTop() < 30 && loadInfo) {
+        loadInfo = false;
+        if (lastMessage) {
+          pullHistoryMessages(lastMessage)
+        }
+        loadInfo = true;
+      }
+    });
+
+
+    $scope.isViewMessageHint = false;
+    $scope.markInfo = '';
+    $scope.shut = function () {
+      $scope.isViewMessageHint = false;
+    };
+    $scope.messageId = 1;
     /**
      * 移动对话到最前
      * @param userOrChatGroup
@@ -68,7 +88,7 @@ angular.module('imApp', ['imService'])
       if (delHistory) {
         //执行删除
         $scope.del(delHistory, false);
-        if ($scope.currentChat) {
+        if ($scope.currentChat && $scope.currentChat.id == firstHistory.id) {
           $scope.currentChat = userOrChatGroup;
         }
 
@@ -86,7 +106,6 @@ angular.module('imApp', ['imService'])
     $scope.del = function (chat, flag) {
 
       $scope.historys.splice($scope.historys.indexOf(chat), 1);
-      //var id = chat.user ? chat.user.id : chat.chatGroup.id
       if (flag) {
         chatHistory.delHistory(chat.user ? chat.user.id : chat.chatGroup.id);
       }
@@ -95,10 +114,78 @@ angular.module('imApp', ['imService'])
         $scope.currentChat = undefined;
       }
     };
+
+    //拉取历史消息
+    var pullHistoryMessages = function (message) {
+      console.log(message)
+      //拉取好友消息
+      if (message.type == 'chat') {
+        chatHistory.getChatHistoryMessage({id: $scope.currentChat.id}, message.createTime, function (result) {//拉取历史聊天记录
+          if (result.success) {
+            if (result.result.messages.length > 0) {//如果有该好友的历史消息
+              if (result.result.messages.length < 20) {
+                $scope.loadInfo = false;
+              }
+              var proMessageId = $scope.messages[0].id;
+              angular.forEach(result.result.messages, function (m) {
+                $scope.messages.splice(0, 0, m);
+              });
+              lastMessage = $scope.messages[0]
+              setTimeout(function () {
+                scrollService.scrollBottom(proMessageId);
+              }, 100)
+            } else {
+              $scope.loadInfo = true;
+              $scope.loadFinish = true;
+              setTimeout(function () {
+                $scope.loadInfo = false;
+                $scope.$apply();
+              }, 2000)
+            }
+          }
+        })
+      } else {//选中的是群聊
+        chatHistory.getChatGroupHistoryMessage({id:$scope.currentChat.id}, message.createTime, function (result) {
+          if (result.success) {
+            if (result.result.messages.length > 0) {//如果有该好友的历史消息
+              if (result.result.messages.length < 20) {
+                $scope.loadInfo = false;
+              }
+              //$scope.messages = result.result.messages.reverse();
+              var proMessageId = $scope.messages[0].id;
+              angular.forEach(result.result.messages, function (m) {
+                $scope.messages.splice(0, 0, m);
+              });
+              lastMessage = result.result.messages[result.result.messages.length - 1];
+              console.log("lastMessage ============", lastMessage)
+              setTimeout(function () {
+                scrollService.scrollBottom(proMessageId);
+              }, 100)
+            } else {
+              $scope.loadFinish = true;
+              $scope.loadInfo = true;
+              setTimeout(function () {
+                $scope.loadInfo = false;
+                $scope.$apply();
+              }, 2000)
+            }
+          }
+        });
+      }
+    };
     $scope.continueChat = function (history) {
+      $scope.loadInfo = true;
+      $scope.loadFinish = false;
       inputService.setFocus();
-      console.log($scope.historys);
-      console.log(history)
+      var unReadCount = history.unReadCount;
+      if (unReadCount > 0 && history.startUnReadMessage) {//显示未读标记
+        $scope.messageId = "#" + history.startUnReadMessage.id
+        $scope.isUnRead = true;
+        $scope.markInfo = unReadCount + "条未读消息";
+        $scope.isViewMessageHint = true;
+      } else {
+        $scope.isViewMessageHint = false;
+      }
       history.unReadCount = 0;
       var chat = undefined;
       if (history.user) {
@@ -116,7 +203,7 @@ angular.module('imApp', ['imService'])
         return;
       }
       $scope.messages = [];
-      $scope.currentChat = chat;
+      $scope.currentChat = chat;//切换到当前聊天
       var topChat = undefined;
       angular.forEach($scope.historys, function (temp) {
         var tempChat = temp.user ? temp.user : temp.chatGroup;
@@ -124,47 +211,44 @@ angular.module('imApp', ['imService'])
           topChat = tempChat;
         }
       });
-      if (!topChat) {
+      if (!topChat) {//没有在临时列表中找到则创建一个
         $scope.historys.splice(0, 0, history);
         chatHistory.moveEmptyMessageChatTop(chat.id, $scope.currentChatType);
       }
-      if (history.user) {
-        chatHistory.getChatHistoryMessage(chat, new Date().getTime(), function (result) {
+      if (history.user) {//选中的是好友
+        chatHistory.getChatHistoryMessage(chat, new Date().getTime(), function (result) {//拉取历史聊天记录
           if (result.success) {
-            if (result.result.messages.length > 0) {
-              $scope.messages = result.result.messages.reverse();
-              for (var index in $scope.historys) {
-                var history = $scope.historys[index];
-                var historyChat = history.user ? history.user : history.chatGroup;
-                if (historyChat.id == chat.id) {
-                  console.log($scope.messages)
-                  history.message = $scope.messages[$scope.messages.length - 1];
-                  setTimeout(function () {
-                    scrollService.scrollBottom(history.message.id);
-                  }, 100);
-                  break;
-                }
+            if (result.result.messages.length > 0) {//如果有该好友的历史消息
+              if (result.result.messages.length < 20) {
+                $scope.loadInfo = false;
               }
+              $scope.messages = result.result.messages.reverse();
+              lastMessage = $scope.messages[0];
+              history.message = $scope.messages[$scope.messages.length - 1];
+              setTimeout(function () {
+                scrollService.scrollBottom(history.message.id);
+              }, 100);//移动滚动条
+            } else {
+              $scope.loadInfo = false;
             }
           }
         })
-      } else {
+      } else {//选中的是群聊
         chatHistory.getChatGroupHistoryMessage(chat, new Date().getTime(), function (result) {
           if (result.success) {
             if (result.result.messages.length > 0) {
-              $scope.messages = result.result.messages.reverse();
-              for (var index in $scope.historys) {
-                var history = $scope.historys[index];
-                var historyChat = history.user ? history.user : history.chatGroup;
-                if (historyChat.id == chat.id) {
-                  history.message = $scope.messages[$scope.messages.length - 1];
-                  setTimeout(function () {
-                    scrollService.scrollBottom(history.message.id);
-                  }, 100);
-
-                  break;
-                }
+              if (result.result.messages.length < 20) {
+                $scope.loadInfo = false;
               }
+              $scope.messages = result.result.messages.reverse();
+              lastMessage = $scope.messages[0]
+              console.log("lastMessage -->  ",lastMessage)
+              history.message = $scope.messages[$scope.messages.length - 1];
+              setTimeout(function () {
+                scrollService.scrollBottom(history.message.id);
+              }, 100);
+            } else {
+              $scope.loadInfo = false;
             }
           }
         });
@@ -180,9 +264,16 @@ angular.module('imApp', ['imService'])
         console.log('请输入文本!');
         return;
       }
-      var _content = $(content);
-      _content.find("img").attr("onclick", "viewImg(this)");
-      content = _content[0].outerHTML;
+      try {
+        var _content = $(content);
+        if (_content.find(".loadingclass").length > 0) {
+          alert("请等待上传完毕后发送消息!")
+          return;
+        }
+        _content.find("img").attr("onclick", "viewImg(this)");
+        content = _content[0].outerHTML;
+      } catch (e) {
+      }
       var user = userService.user;
       var message = {
         type: $scope.currentChatType,//TODO
@@ -236,6 +327,7 @@ angular.module('imApp', ['imService'])
                         }
                       });
                     });
+                    console.log(user)
                     if (user) {
                       //msg.from = user;
                       moveTop(user, msg);
