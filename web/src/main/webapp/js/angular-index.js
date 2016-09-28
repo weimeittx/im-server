@@ -11,13 +11,21 @@ angular.module('imApp', ['imService'])
     $scope.exit = function () {
       console.log("关闭")
     }
+    $scope.logout = function () {
+      $scope.isLogin = false;
+    }
   })
   .controller('navController', function ($scope, userService) {
     $scope.$watch('isLogin', function (isLogin) {
+      console.log("isLogin-->  ", isLogin)
       if (isLogin) {
-        $scope.user = userService.user
+        $scope.user = userService.user;
+        $scope.$parent.currentNav = 1;
+      } else {
+        $scope.user = undefined;
+        $scope.$parent.currentNav = undefined;
       }
-    })
+    });
     $scope.switchNav = function (index) {
       $scope.$parent.currentNav = index;
     }
@@ -121,6 +129,9 @@ angular.module('imApp', ['imService'])
       //拉取好友消息
       if (message.type == 'chat') {
         chatHistory.getChatHistoryMessage({id: $scope.currentChat.id}, message.createTime, function (result) {//拉取历史聊天记录
+          if (!$scope.isLogin) {
+            return;
+          }
           if (result.success) {
             if (result.result.messages.length > 0) {//如果有该好友的历史消息
               if (result.result.messages.length < 20) {
@@ -145,7 +156,10 @@ angular.module('imApp', ['imService'])
           }
         })
       } else {//选中的是群聊
-        chatHistory.getChatGroupHistoryMessage({id:$scope.currentChat.id}, message.createTime, function (result) {
+        chatHistory.getChatGroupHistoryMessage({id: $scope.currentChat.id}, message.createTime, function (result) {
+          if (!$scope.isLogin) {
+            return;
+          }
           if (result.success) {
             if (result.result.messages.length > 0) {//如果有该好友的历史消息
               if (result.result.messages.length < 20) {
@@ -242,7 +256,7 @@ angular.module('imApp', ['imService'])
               }
               $scope.messages = result.result.messages.reverse();
               lastMessage = $scope.messages[0]
-              console.log("lastMessage -->  ",lastMessage)
+              console.log("lastMessage -->  ", lastMessage)
               history.message = $scope.messages[$scope.messages.length - 1];
               setTimeout(function () {
                 scrollService.scrollBottom(history.message.id);
@@ -334,6 +348,9 @@ angular.module('imApp', ['imService'])
                       if ($scope.currentChat && $scope.currentChat.id == msg.from.id) {
                         $scope.messages.push(msg)
                         chatHistory.userMessageReaded(msg.id, msg.from.id);
+                        setTimeout(function () {
+                          scrollService.scrollBottom(msg.id)
+                        }, 100)
                       } else {
                         console.log("缓存消息")
                         //增加未读标识
@@ -370,6 +387,9 @@ angular.module('imApp', ['imService'])
                         console.log($scope.messages);
                         $scope.messages.push(msg);
                         chatHistory.chatGroupMessageReaded(msg.id, msg.to);
+                        setTimeout(function () {
+                          scrollService.scrollBottom(msg.id)
+                        }, 100)
                       } else {
                         console.log("缓存群消息2");
                         chatHistory.setUnReadCount($scope.historys, msg.to, function (count) {
@@ -391,6 +411,11 @@ angular.module('imApp', ['imService'])
         eventBusService.start();
 
 
+      } else {
+        eventBusService.closeEvent();
+        $scope.messages = [];
+        $scope.historys = [];
+        $scope.loginUser = undefined;
       }
     })
   })
@@ -426,6 +451,9 @@ angular.module('imApp', ['imService'])
             $scope.chats = result.result;
           }
         })
+      } else {
+        $scope.chats = undefined;
+        $scope.chatGroups = undefined;
       }
     });
 

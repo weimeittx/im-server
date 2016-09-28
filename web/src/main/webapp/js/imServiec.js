@@ -5,7 +5,7 @@ angular.module('imService', [])
         return "";
       }
       if (history.user) {
-        return history.message.content.replace(/<\s?img[^>]*>/gi,' 【图片】 ').replace(/<[^>]+>/g, "");
+        return history.message.content.replace(/<\s?img[^>]*>/gi, ' 【图片】 ').replace(/<[^>]+>/g, "");
       } else {
         var result = undefined;
         if (history.message.from.id == loginUser.id) {
@@ -13,7 +13,7 @@ angular.module('imService', [])
         } else {
           result = history.message.from.nickname + ":" + history.message.content;
         }
-        result = result.replace(/<\s?img[^>]*>/gi,' 【图片】 ');
+        result = result.replace(/<\s?img[^>]*>/gi, ' 【图片】 ');
         return result.replace(/<[^>]+>/g, "");
       }
     }
@@ -32,18 +32,6 @@ angular.module('imService', [])
     this.user = undefined;
   })
   .service('eventBusService', function () {
-      //服务必须未开启
-      var mustUnRun = function () {
-        if (isRun) {
-          throw "服务已经开启."
-        }
-      };
-      //服务必须开启
-      var mustRun = function () {
-        if (!isRun) {
-          throw "服务未开启."
-        }
-      }
       var onCloses = [];
       var onOpens = [];
       var eventBus = undefined;
@@ -62,31 +50,35 @@ angular.module('imService', [])
           })
         };
         eventBus.onclose = function () {
+          console.log("服务关闭成功");
           angular.forEach(onCloses, function (listener) {
             listener();
           })
         }
       };
       this.addOpenListener = function (listener) {
-        mustUnRun();
         onOpens.push(listener)
       };
       this.removeOpenListener = function (listener) {
-        mustUnRun();
         onOpens.splice(onOpens.indexOf(listener), 1)
       };
       this.addCloseListener = function (listener) {
-        mustUnRun();
         onCloses.push(listener)
       };
       this.removeCloseListener = function (listener) {
-        mustUnRun();
         onCloses.splice(onCloses.indexOf(listener), 1)
       };
 
       this.registerHandler = function (address, f) {
-        mustRun()
         eventBus.registerHandler(address, f)
+      };
+      this.closeEvent = function () {
+        if (eventBus) {
+          onOpens = [];
+          onCloses = [];
+
+          eventBus.close();
+        }
       }
     }
   )

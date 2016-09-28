@@ -511,7 +511,7 @@ body {
 }
 
 .message-time {
-    display: none;
+    /*display: none;*/
 }
 
 .left-message .message-time {

