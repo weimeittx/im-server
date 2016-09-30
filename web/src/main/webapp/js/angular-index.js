@@ -17,7 +17,6 @@ angular.module('imApp', ['imService'])
   })
   .controller('navController', function ($scope, userService) {
     $scope.$watch('isLogin', function (isLogin) {
-      console.log("isLogin-->  ", isLogin)
       if (isLogin) {
         $scope.user = userService.user;
         $scope.$parent.currentNav = 1;
@@ -125,7 +124,6 @@ angular.module('imApp', ['imService'])
 
     //拉取历史消息
     var pullHistoryMessages = function (message) {
-      console.log(message)
       //拉取好友消息
       if (message.type == 'chat') {
         chatHistory.getChatHistoryMessage({id: $scope.currentChat.id}, message.createTime, function (result) {//拉取历史聊天记录
@@ -171,7 +169,6 @@ angular.module('imApp', ['imService'])
                 $scope.messages.splice(0, 0, m);
               });
               lastMessage = result.result.messages[result.result.messages.length - 1];
-              console.log("lastMessage ============", lastMessage)
               setTimeout(function () {
                 scrollService.scrollBottom(proMessageId);
               }, 100)
@@ -213,7 +210,6 @@ angular.module('imApp', ['imService'])
       }
 
       if ($scope.currentChat && $scope.currentChat.id == chat.id) {
-        console.log("重复点击");
         return;
       }
       $scope.messages = [];
@@ -256,7 +252,6 @@ angular.module('imApp', ['imService'])
               }
               $scope.messages = result.result.messages.reverse();
               lastMessage = $scope.messages[0]
-              console.log("lastMessage -->  ", lastMessage)
               history.message = $scope.messages[$scope.messages.length - 1];
               setTimeout(function () {
                 scrollService.scrollBottom(history.message.id);
@@ -275,7 +270,6 @@ angular.module('imApp', ['imService'])
       var content = inputService.getContent();
       inputService.setFocus();
       if (!content) {
-        console.log('请输入文本!');
         return;
       }
       try {
@@ -301,7 +295,6 @@ angular.module('imApp', ['imService'])
       $scope.messages.push(message);
       inputService.clearContent();
       messageService.sendMessage(message, function () {
-        console.log("发送成功!")
       });
 
 
@@ -319,16 +312,13 @@ angular.module('imApp', ['imService'])
         $scope.loginUser = userService.user;
         chatHistory.getHistory(function (result) {
           if (result.success) {
-            console.log(result);
             $scope.historys = result.result ? result.result : [];
           }
         });
 
 
         eventBusService.addOpenListener(function () {
-          console.log("监听消息成功 -> " + userService.user.id);
           eventBusService.registerHandler(userService.user.id, function (msg) {
-            console.log($scope.historys)
             switch (msg.type) {
               case 'chat':
                 chatService.getChat(function (result) {
@@ -341,7 +331,6 @@ angular.module('imApp', ['imService'])
                         }
                       });
                     });
-                    console.log(user)
                     if (user) {
                       //msg.from = user;
                       moveTop(user, msg);
@@ -352,7 +341,6 @@ angular.module('imApp', ['imService'])
                           scrollService.scrollBottom(msg.id)
                         }, 100)
                       } else {
-                        console.log("缓存消息")
                         //增加未读标识
                         chatHistory.setUnReadCount($scope.historys, msg.from.id, function (count) {
                           if (!count) {
@@ -368,8 +356,6 @@ angular.module('imApp', ['imService'])
                 });
                 break;
               case 'chatGroup':
-                console.log("接收到群消息 -->   ", msg);
-                console.log($scope.historys);
                 chatGroupService.getChatGroup(function (result) {
                   if (result.success) {
                     var groupChat = undefined;
@@ -384,20 +370,17 @@ angular.module('imApp', ['imService'])
                     moveTop(groupChat, msg);
                     if (groupChat) {
                       if ($scope.currentChat && $scope.currentChat.id == groupChat.id) {
-                        console.log($scope.messages);
                         $scope.messages.push(msg);
                         chatHistory.chatGroupMessageReaded(msg.id, msg.to);
                         setTimeout(function () {
                           scrollService.scrollBottom(msg.id)
                         }, 100)
                       } else {
-                        console.log("缓存群消息2");
                         chatHistory.setUnReadCount($scope.historys, msg.to, function (count) {
                           return count + 1;
                         });
                       }
                       $scope.$apply();
-                      console.log($scope.currentChat);
                     }
                   }
                 });
@@ -465,7 +448,6 @@ angular.module('imApp', ['imService'])
       })
     };
     $scope.enterGroupChat = function (chatGroup) {
-      console.log(chatGroup);
       $scope.$parent.currentNav = 1;
       chatGroup.type = "chatGroup";
       $scope.$parent.continueChat({

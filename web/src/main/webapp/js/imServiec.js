@@ -44,13 +44,11 @@ angular.module('imService', [])
         }
         isRun = true;
         eventBus.onopen = function () {
-          console.log("启动推送服务成功")
           angular.forEach(onOpens, function (listener) {
             listener();
           })
         };
         eventBus.onclose = function () {
-          console.log("服务关闭成功");
           angular.forEach(onCloses, function (listener) {
             listener();
           })
@@ -114,7 +112,6 @@ angular.module('imService', [])
       $http({
         url: "/userChatHistory/chatGroupMessageReaded?id=" + chatGroupId + "&messageId=" + messageId
       }).success(function () {
-        console.log("chatGroupMessageReaded is success")
       })
     };
 
@@ -126,7 +123,6 @@ angular.module('imService', [])
       $http({
         url: "userChatHistory/userMessageReaded?id=" + userId + "&messageId=" + messageId
       }).success(function () {
-        console.log("userMessageReaded is success")
       })
     }
     /**
@@ -150,9 +146,7 @@ angular.module('imService', [])
         url: "/userChatHistory/delHistory?id=" + id
       }).success(function (result) {
         if (result.success) {
-          console.log("删除历史聊天成功")
         } else {
-          console.log("删除历史聊天失败")
         }
       })
     };
@@ -225,9 +219,7 @@ angular.module('imService', [])
         url: "/userChatHistory/delHistory?id=" + id
       }).success(function (result) {
         if (result.success) {
-          console.log("删除历史聊天成功")
         } else {
-          console.log("删除历史聊天失败")
         }
       })
     }
@@ -273,7 +265,6 @@ angular.module('imService', [])
         url: "/message/moveEmptyMessageChatTop?chatId=" + chatId + "&type=" + type,
         method: "get"
       }).success(function () {
-        console.log("success")
       })
     };
 
